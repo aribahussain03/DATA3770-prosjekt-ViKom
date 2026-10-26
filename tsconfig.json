@@ -16,5 +16,5 @@
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-, "src/components/AppDialog.jsx", "src/features/health/MedicationsScreen.jsx", "src/features/health/HealthOverviewScreen.jsx", "src/features/health/ContactHomeCareScreen.jsx", "src/features/health/AppointmentsScreen.jsx", "src/components/HealthTile.jsx", "src/theme/typography.js", "src/theme/colors.js"  ]
+, "src/components/AppDialog.jsx", "src/features/health/MedicationsScreen.jsx", "src/features/health/HealthOverviewScreen.jsx", "src/features/health/ContactHomeCareScreen.jsx", "src/features/health/AppointmentsScreen.jsx", "src/components/HealthTile.jsx", "src/theme/typography.js", "src/theme/colors.js", "src/components/app-tabs.web.jsx", "src/components/app-tabs.jsx", "src/components/animated-icon.web.jsx", "src/components/animated-icon.jsx", "src/app/index.jsx", "src/app/explore.jsx", "src/app/_layout.jsx", "src/components/ui/collapsible.jsx"  ]
 }
