@@ -3,17 +3,12 @@ import { Pressable, StyleSheet, Text } from 'react-native';
 import { AppColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 
-type HealthTileProps = {
-  title: string;
-  description: string;
-  onPress: () => void;
-};
-
 export default function HealthTile({
   title,
   description,
+  icon,
   onPress,
-}: HealthTileProps) {
+}) {
   return (
     <Pressable
       accessibilityRole="button"
@@ -23,8 +18,13 @@ export default function HealthTile({
         pressed && styles.pressed,
       ]}
     >
+      {icon}
+
       <Text style={styles.title}>{title}</Text>
-      <Text style={styles.description}>{description}</Text>
+
+      {description ? (
+        <Text style={styles.description}>{description}</Text>
+      ) : null}
     </Pressable>
   );
 }
@@ -32,11 +32,10 @@ export default function HealthTile({
 const styles = StyleSheet.create({
   tile: {
     backgroundColor: AppColors.primaryLight,
-    borderColor: AppColors.primary,
-    borderWidth: 1,
-    borderRadius: 16,
-    padding: 24,
+    borderRadius: 12,
+    padding: 20,
     minHeight: 120,
+    alignItems: 'center',
     justifyContent: 'center',
     gap: 8,
   },
@@ -44,11 +43,13 @@ const styles = StyleSheet.create({
     opacity: 0.75,
   },
   title: {
-    ...Typography.subheading,
+    ...Typography.button,
     color: AppColors.text,
+    textAlign: 'center',
   },
   description: {
-    ...Typography.body,
-    color: AppColors.textSecondary,
+    ...Typography.caption,
+    color: AppColors.text,
+    textAlign: 'center',
   },
 });
