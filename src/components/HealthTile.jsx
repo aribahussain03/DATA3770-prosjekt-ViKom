@@ -1,9 +1,32 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { Pressable, StyleSheet, Text } from 'react-native';
 
 import { AppColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 
-export default function HealthTile({ title, onPress }) {
+function getIconName(title) {
+  const normalizedTitle = title.toLowerCase();
+
+  if (normalizedTitle.includes('avtaler')) {
+    return 'event';
+  }
+
+  if (normalizedTitle.includes('medisiner')) {
+    return 'local-pharmacy';
+  }
+
+  if (normalizedTitle.includes('hjemmetjeneste')) {
+    return 'chat';
+  }
+
+  return 'info-outline';
+}
+
+export default function HealthTile({
+  title,
+  onPress,
+  iconName,
+}) {
   const lines = title.split('\n');
 
   return (
@@ -16,6 +39,14 @@ export default function HealthTile({ title, onPress }) {
         pressed && styles.pressed,
       ]}
     >
+      <MaterialIcons
+        name={iconName ?? getIconName(title)}
+        size={36}
+        color={AppColors.text}
+        accessible={false}
+        style={styles.icon}
+      />
+
       {lines.map((line, index) => (
         <Text
           key={`${index}-${line}`}
@@ -33,13 +64,16 @@ export default function HealthTile({ title, onPress }) {
 
 const styles = StyleSheet.create({
   tile: {
-    minHeight: 120,
+    minHeight: 140,
     paddingHorizontal: 8,
     paddingVertical: 20,
     borderRadius: 12,
     backgroundColor: AppColors.primaryLight,
     alignItems: 'center',
     justifyContent: 'center',
+  },
+  icon: {
+    marginBottom: 10,
   },
   title: {
     ...Typography.body,

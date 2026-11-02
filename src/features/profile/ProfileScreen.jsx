@@ -1,3 +1,4 @@
+import { MaterialIcons } from '@expo/vector-icons';
 import { useState } from 'react';
 import {
     Alert,
@@ -13,17 +14,79 @@ import { usePermissions } from '../../context/PermissionsContext';
 import { AppColors } from '../../theme/colors';
 import { Typography } from '../../theme/typography';
 
-const permissionLabels = {
-  appointments: 'Avtaler',
-  medications: 'Medisiner',
-  homeCare: 'Kontakt hjemmetjenesten',
-};
+const permissionOptions = [
+  {
+    key: 'appointments',
+    label: 'Avtaler',
+    icon: 'event',
+  },
+  {
+    key: 'medications',
+    label: 'Medisiner',
+    icon: 'local-pharmacy',
+  },
+  {
+    key: 'homeCare',
+    label: 'Kontakt hjemmetjenesten',
+    icon: 'chat',
+  },
+];
 
 const statusLabels = {
   none: 'Ingen tilgang',
   pending: 'Venter på godkjenning',
   granted: 'Tilgang godkjent',
 };
+
+function Icon({ name, size = 24, color = AppColors.text }) {
+  return (
+    <MaterialIcons
+      name={name}
+      size={size}
+      color={color}
+      accessible={false}
+    />
+  );
+}
+
+function ProfileButton({
+  label,
+  icon,
+  onPress,
+  disabled = false,
+  secondary = false,
+  danger = false,
+  centered = false,
+}) {
+  const color = danger
+    ? '#B42318'
+    : secondary
+      ? AppColors.primary
+      : '#FFFFFF';
+
+  return (
+    <Pressable
+      accessibilityRole="button"
+      accessibilityState={{ disabled }}
+      disabled={disabled}
+      onPress={onPress}
+      style={({ pressed }) => [
+        styles.button,
+        secondary && styles.secondaryButton,
+        danger && styles.removeButton,
+        centered && styles.centeredButton,
+        disabled && styles.disabled,
+        pressed && styles.pressed,
+      ]}
+    >
+      <Icon name={icon} color={color} size={22} />
+
+      <Text style={[styles.buttonText, { color }]}>
+        {label}
+      </Text>
+    </Pressable>
+  );
+}
 
 export default function ProfileScreen({
   onRequestPermissions,
@@ -47,9 +110,9 @@ export default function ProfileScreen({
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [personName, setPersonName] = useState('');
 
-  const pendingSections = Object.keys(permissionLabels).filter(
-    (section) => permissionStatuses[section] === 'pending'
-  );
+  const pendingSections = permissionOptions
+    .filter(({ key }) => permissionStatuses[key] === 'pending')
+    .map(({ key }) => key);
 
   function saveUsername() {
     const trimmedUsername = usernameDraft.trim();
@@ -102,34 +165,33 @@ export default function ProfileScreen({
       </Text>
 
       <View style={styles.profileSection}>
-        <View style={styles.avatarPlaceholder}>
-          <Text
-            accessibilityLabel={
-              profileImage ? 'Valgt eksempelbilde' : 'Profilinitial'
-            }
-            style={styles.avatarInitial}
-          >
-            {profileImage ||
-              username.trim().charAt(0).toUpperCase() ||
-              '?'}
-          </Text>
+        <View
+          accessible
+          accessibilityLabel={
+            profileImage ? 'Valgt eksempelbilde' : 'Profilbilde'
+          }
+          style={styles.avatarPlaceholder}
+        >
+          {profileImage ? (
+            <Text style={styles.avatarImage}>
+              {profileImage}
+            </Text>
+          ) : (
+            <Icon
+              name="account-circle"
+              size={84}
+              color={AppColors.primary}
+            />
+          )}
         </View>
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityLabel="Bytt eksempelbilde"
-          accessibilityState={{ disabled: !onChangeImage }}
+        <ProfileButton
+          label="Endre bilde"
+          icon="photo-camera"
           onPress={onChangeImage}
           disabled={!onChangeImage}
-          style={({ pressed }) => [
-            styles.button,
-            styles.centeredButton,
-            !onChangeImage && styles.disabled,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.buttonText}>Endre bilde</Text>
-        </Pressable>
+          centered
+        />
       </View>
 
       <View style={styles.section}>
@@ -152,37 +214,27 @@ export default function ProfileScreen({
             />
 
             <View style={styles.buttonRow}>
-              <Pressable
-                accessibilityRole="button"
-                accessibilityState={{
-                  disabled: !usernameDraft.trim(),
-                }}
+              <ProfileButton
+                label="Lagre"
+                icon="check"
                 onPress={saveUsername}
                 disabled={!usernameDraft.trim()}
-                style={({ pressed }) => [
-                  styles.button,
-                  !usernameDraft.trim() && styles.disabled,
-                  pressed && styles.pressed,
-                ]}
-              >
-                <Text style={styles.buttonText}>Lagre</Text>
-              </Pressable>
+              />
 
-              <Pressable
-                accessibilityRole="button"
+              <ProfileButton
+                label="Avbryt"
+                icon="close"
                 onPress={() => setEditingUsername(false)}
-                style={styles.secondaryButton}
-              >
-                <Text style={styles.secondaryButtonText}>
-                  Avbryt
-                </Text>
-              </Pressable>
+                secondary
+              />
             </View>
           </View>
         ) : (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel="Rediger brukernavn"
+            accessibilityLabel={`Rediger brukernavn${
+              username ? `: ${username}` : ''
+            }`}
             onPress={() => {
               setUsernameDraft(username);
               setEditingUsername(true);
@@ -192,22 +244,31 @@ export default function ProfileScreen({
               pressed && styles.pressed,
             ]}
           >
+            <Icon
+              name="person-outline"
+              color={AppColors.primary}
+            />
+
             <Text style={styles.body}>
               {username || 'Legg til brukernavn'}
             </Text>
 
-            <Text style={styles.editText}>Endre</Text>
+            <Icon name="edit" color={AppColors.primary} />
           </Pressable>
         )}
       </View>
 
       <View style={styles.section}>
-        <Text
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          Administrerte tilganger
-        </Text>
+        <View style={styles.sectionHeading}>
+          <Icon name="people-outline" color={AppColors.primary} />
+
+          <Text
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
+            Administrerte tilganger
+          </Text>
+        </View>
 
         <Text style={styles.description}>
           Velg hvem du ønsker å se helseoversikten til.
@@ -236,14 +297,15 @@ export default function ProfileScreen({
                     isSelected && styles.selectedPersonAvatar,
                   ]}
                 >
-                  <Text
-                    style={[
-                      styles.personInitial,
-                      isSelected && styles.selectedPersonInitial,
-                    ]}
-                  >
-                    {person.name.charAt(0).toUpperCase()}
-                  </Text>
+                  <Icon
+                    name="person"
+                    size={32}
+                    color={
+                      isSelected
+                        ? '#FFFFFF'
+                        : AppColors.text
+                    }
+                  />
                 </View>
 
                 <Text style={styles.personName}>
@@ -251,7 +313,16 @@ export default function ProfileScreen({
                 </Text>
 
                 {isSelected && (
-                  <Text style={styles.selectedText}>Valgt</Text>
+                  <View style={styles.selectedLabel}>
+                    <Icon
+                      name="check-circle"
+                      size={16}
+                      color={AppColors.primary}
+                    />
+                    <Text style={styles.selectedText}>
+                      Valgt
+                    </Text>
+                  </View>
                 )}
               </Pressable>
             );
@@ -259,36 +330,23 @@ export default function ProfileScreen({
         </View>
 
         <View style={styles.buttonRow}>
-          <Pressable
-            accessibilityRole="button"
+          <ProfileButton
+            label={showAddPerson ? 'Avbryt' : 'Legg til person'}
+            icon={showAddPerson ? 'close' : 'person-add'}
             onPress={() =>
               setShowAddPerson((current) => !current)
             }
-            style={styles.secondaryButton}
-          >
-            <Text style={styles.secondaryButtonText}>
-              {showAddPerson ? 'Avbryt' : '+ Legg til person'}
-            </Text>
-          </Pressable>
+            secondary
+          />
 
           {people.length > 1 && (
-            <Pressable
-              accessibilityRole="button"
+            <ProfileButton
+              label={`Fjern ${selectedPerson.name}`}
+              icon="delete-outline"
               onPress={confirmRemovePerson}
-              style={[
-                styles.secondaryButton,
-                styles.removeButton,
-              ]}
-            >
-              <Text
-                style={[
-                  styles.secondaryButtonText,
-                  styles.removeText,
-                ]}
-              >
-                Fjern {selectedPerson.name}
-              </Text>
-            </Pressable>
+              secondary
+              danger
+            />
           )}
         </View>
 
@@ -306,21 +364,12 @@ export default function ProfileScreen({
               style={styles.input}
             />
 
-            <Pressable
-              accessibilityRole="button"
-              accessibilityState={{
-                disabled: !personName.trim(),
-              }}
+            <ProfileButton
+              label="Legg til"
+              icon="add"
               onPress={savePerson}
               disabled={!personName.trim()}
-              style={({ pressed }) => [
-                styles.button,
-                !personName.trim() && styles.disabled,
-                pressed && styles.pressed,
-              ]}
-            >
-              <Text style={styles.buttonText}>Legg til</Text>
-            </Pressable>
+            />
 
             <Text style={styles.description}>
               Personen legges til som eksempel i prototypen.
@@ -331,54 +380,77 @@ export default function ProfileScreen({
       </View>
 
       <View style={styles.section}>
-        <Text
-          accessibilityRole="header"
-          style={styles.sectionTitle}
-        >
-          Tillatelser for {selectedPerson.name}
-        </Text>
+        <View style={styles.sectionHeading}>
+          <Icon
+            name="verified-user"
+            color={AppColors.primary}
+          />
 
-        {Object.entries(permissionLabels).map(
-          ([section, label]) => {
-            const status = permissionStatuses[section];
+          <Text
+            accessibilityRole="header"
+            style={styles.sectionTitle}
+          >
+            Tillatelser for {selectedPerson.name}
+          </Text>
+        </View>
 
-            return (
-              <View key={section} style={styles.permissionRow}>
+        {permissionOptions.map(({ key, label, icon }) => {
+          const status = permissionStatuses[key];
+
+          const statusColor =
+            status === 'granted'
+              ? '#176B39'
+              : status === 'pending'
+                ? '#855800'
+                : AppColors.textSecondary;
+
+          const statusIcon =
+            status === 'granted'
+              ? 'lock-open'
+              : status === 'pending'
+                ? 'schedule'
+                : 'lock-outline';
+
+          return (
+            <View key={key} style={styles.permissionRow}>
+              <Icon
+                name={icon}
+                size={28}
+                color={AppColors.primary}
+              />
+
+              <View style={styles.permissionContent}>
                 <Text style={styles.permissionLabel}>
                   {label}
                 </Text>
 
-                <Text
-                  style={[
-                    styles.status,
-                    status === 'granted' && styles.granted,
-                    status === 'pending' && styles.pending,
-                  ]}
-                >
-                  {statusLabels[status]}
-                </Text>
-              </View>
-            );
-          }
-        )}
+                <View style={styles.statusRow}>
+                  <Icon
+                    name={statusIcon}
+                    size={18}
+                    color={statusColor}
+                  />
 
-        <Pressable
-          accessibilityRole="button"
-          accessibilityState={{
-            disabled: !onRequestPermissions,
-          }}
+                  <Text
+                    style={[
+                      styles.status,
+                      { color: statusColor },
+                    ]}
+                  >
+                    {statusLabels[status]}
+                  </Text>
+                </View>
+              </View>
+            </View>
+          );
+        })}
+
+        <ProfileButton
+          label="Be om tillatelser"
+          icon="vpn-key"
           onPress={onRequestPermissions}
           disabled={!onRequestPermissions}
-          style={({ pressed }) => [
-            styles.button,
-            !onRequestPermissions && styles.disabled,
-            pressed && styles.pressed,
-          ]}
-        >
-          <Text style={styles.buttonText}>
-            Be om tillatelser
-          </Text>
-        </Pressable>
+        />
 
         {pendingSections.length > 0 && (
           <View style={styles.testPanel}>
@@ -387,20 +459,17 @@ export default function ProfileScreen({
               forespørselen.
             </Text>
 
-            <Pressable
-              accessibilityRole="button"
+            <ProfileButton
+              label="Simuler godkjenning"
+              icon="check-circle-outline"
               onPress={() =>
                 simulateApproval(
                   selectedPerson.id,
                   pendingSections
                 )
               }
-              style={styles.secondaryButton}
-            >
-              <Text style={styles.secondaryButtonText}>
-                Simuler godkjenning
-              </Text>
-            </Pressable>
+              secondary
+            />
           </View>
         )}
       </View>
@@ -435,17 +504,22 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarInitial: {
-    fontSize: 40,
-    fontWeight: '600',
+  avatarImage: {
+    fontSize: 48,
     color: AppColors.text,
   },
   section: {
     gap: 12,
   },
+  sectionHeading: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 10,
+  },
   sectionTitle: {
     ...Typography.subheading,
     color: AppColors.text,
+    flex: 1,
   },
   label: {
     ...Typography.body,
@@ -469,10 +543,6 @@ const styles = StyleSheet.create({
     padding: 12,
     gap: 12,
   },
-  editText: {
-    ...Typography.body,
-    color: AppColors.primary,
-  },
   editGroup: {
     gap: 12,
   },
@@ -493,9 +563,12 @@ const styles = StyleSheet.create({
   },
   button: {
     minHeight: 48,
+    maxWidth: '100%',
     alignSelf: 'flex-start',
+    flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'center',
+    gap: 8,
     paddingHorizontal: 16,
     paddingVertical: 12,
     borderRadius: 8,
@@ -508,28 +581,15 @@ const styles = StyleSheet.create({
     ...Typography.button,
     color: '#FFFFFF',
     textAlign: 'center',
+    flexShrink: 1,
   },
   secondaryButton: {
-    minHeight: 48,
-    alignSelf: 'flex-start',
-    alignItems: 'center',
-    justifyContent: 'center',
-    paddingHorizontal: 16,
-    paddingVertical: 12,
+    backgroundColor: AppColors.background,
     borderWidth: 1,
     borderColor: AppColors.primary,
-    borderRadius: 8,
-  },
-  secondaryButtonText: {
-    ...Typography.button,
-    color: AppColors.primary,
-    textAlign: 'center',
   },
   removeButton: {
     borderColor: '#B42318',
-  },
-  removeText: {
-    color: '#B42318',
   },
   people: {
     flexDirection: 'row',
@@ -561,42 +621,44 @@ const styles = StyleSheet.create({
   selectedPersonAvatar: {
     backgroundColor: AppColors.primary,
   },
-  personInitial: {
-    fontSize: 24,
-    fontWeight: '600',
-    color: AppColors.text,
-  },
-  selectedPersonInitial: {
-    color: '#FFFFFF',
-  },
   personName: {
     ...Typography.body,
     color: AppColors.text,
     textAlign: 'center',
+  },
+  selectedLabel: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   selectedText: {
     ...Typography.caption,
     color: AppColors.text,
   },
   permissionRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
     paddingVertical: 12,
-    gap: 4,
+    gap: 12,
     borderBottomWidth: 1,
     borderBottomColor: AppColors.border,
+  },
+  permissionContent: {
+    flex: 1,
+    gap: 6,
   },
   permissionLabel: {
     ...Typography.body,
     color: AppColors.text,
   },
+  statusRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 6,
+  },
   status: {
     ...Typography.caption,
-    color: AppColors.textSecondary,
-  },
-  granted: {
-    color: '#176B39',
-  },
-  pending: {
-    color: '#855800',
+    flex: 1,
   },
   testPanel: {
     padding: 12,
