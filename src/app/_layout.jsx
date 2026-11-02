@@ -20,7 +20,7 @@ export default function TabLayout() {
     PermissionsProvider,
     AnimatedSplashOverlay,
     AppTabs,
-  };
+  }; 
 
   const missingComponents = Object.entries(components)
     .filter(([, component]) => component == null)
