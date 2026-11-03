@@ -11,7 +11,13 @@ export default function MessageListScreen() {
       <FlatList
         data={mockConversations}
         keyExtractor={(item) => item.id}
-        renderItem={({ item }) => <Text>{item.name}</Text>}
+        renderItem={({ item }) => (
+          <View>
+            <Text>{item.name}</Text>
+            <Text>{item.lastMessage}</Text>
+            <Text>{item.time}</Text>
+          </View>
+        )}
       />
     </View>
   );
