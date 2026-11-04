@@ -1,3 +1,4 @@
+// Testdata til backend er klar. Listen vises i denne rekkefølgen, med nyeste samtale først.
 export const mockConversations = [
   {
     id: '2',
@@ -15,6 +16,7 @@ export const mockConversations = [
   },
 ];
 
+// `conversationId` kobler meldingen til en samtale. `sender` er 'me' eller 'them'.
 export const mockMessages = [
   {
     id: '1',

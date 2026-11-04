@@ -4,8 +4,10 @@ import { Pressable, StyleSheet, Text, TextInput, View } from 'react-native';
 import { AppColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 
+// Fra Figma. Finnes ikke i AppColors ennå.
 const SEND_BLUE = '#1E8BF0';
 
+// Skrivefelt og send-knapp. `onSend` får den ferdige teksten, og feltet tømmes etterpå.
 export default function MessageInput({ onSend }) {
   const [draft, setDraft] = useState('');
 

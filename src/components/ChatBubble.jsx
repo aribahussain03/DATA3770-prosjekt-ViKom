@@ -3,6 +3,7 @@ import { StyleSheet, Text, View } from 'react-native';
 import { AppColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 
+// Én meldingsboble: mine står til høyre, og andres står til venstre.
 export default function ChatBubble({ text, fromMe }) {
   return (
     <View
@@ -32,6 +33,7 @@ const styles = StyleSheet.create({
   },
   mine: {
     alignSelf: 'flex-end',
+    // Fra Figma. Finnes ikke i AppColors ennå.
     backgroundColor: '#42A1F7',
   },
   text: {

@@ -4,6 +4,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppColors } from '../../theme/colors';
 import MessagesHeader from './MessagesHeader';
 
+// Valgskjermen «Meldinger». Hvor knappene leder, bestemmes av navigasjonen via props.
 export default function MessagesHomeScreen({
   onBack,
   onNewMessage,
@@ -33,6 +34,7 @@ export default function MessagesHomeScreen({
   );
 }
 
+// `icon` har ett navn per plattform: SF Symbols på iOS, Material Symbols ellers.
 function ChoiceCard({ label, icon, onPress }) {
   return (
     <Pressable

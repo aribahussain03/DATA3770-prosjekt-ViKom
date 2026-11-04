@@ -15,6 +15,7 @@ import { AppColors } from '../../theme/colors';
 import { Typography } from '../../theme/typography';
 import MessagesHeader from './MessagesHeader';
 
+// Skjermen «Tidligere samtaler»: søk i, åpne og slett samtaler.
 export default function MessageListScreen({
   initialConversations = mockConversations,
   onBack,
@@ -24,11 +25,13 @@ export default function MessageListScreen({
   const [search, setSearch] = useState('');
   const [conversationToDelete, setConversationToDelete] = useState(null);
 
+  // Søket ser bare på navn. Et tomt søk viser alle samtalene.
   const query = search.trim().toLowerCase();
   const filteredConversations = conversations.filter((conversation) =>
     conversation.name.toLowerCase().includes(query)
   );
 
+  // Slettingen gjelder bare lokalt: samtalen er tilbake når appen startes på nytt.
   function deleteConversation() {
     setConversations((current) =>
       current.filter((conversation) => conversation.id !== conversationToDelete.id)
@@ -59,6 +62,7 @@ export default function MessageListScreen({
             accessibilityRole="button"
             accessibilityLabel={`Samtale med ${item.name}. Siste melding: ${item.lastMessage}`}
             accessibilityHint="Hold inne for å slette samtalen"
+            // Lar skjermleserbrukere slette uten å holde inne.
             accessibilityActions={[{ name: 'delete', label: 'Slett samtale' }]}
             onAccessibilityAction={(event) => {
               if (event.nativeEvent.actionName === 'delete') {

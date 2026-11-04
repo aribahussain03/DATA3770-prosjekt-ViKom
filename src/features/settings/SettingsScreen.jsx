@@ -6,6 +6,7 @@ import { AppColors } from "../../theme/colors";
 import { Typography } from "../../theme/typography";
 import MessagesHeader from "../messages/MessagesHeader";
 
+// Farger fra Figma som ikke finnes i AppColors ennå.
 const ROW_GREY = "#EFEFEF";
 const PILL_GREY = "#D9D9D9";
 const LOG_OUT_RED = "#E60000";
@@ -15,6 +16,7 @@ export default function SettingsScreen({
   onBack,
   onLogOut,
 }) {
+  // Valgene lagres bare på skjermen og styrer ingen ekte lyd ennå.
   const [ringtoneOn, setRingtoneOn] = useState(false);
   const [notificationSoundOn, setNotificationSoundOn] = useState(true);
 
@@ -68,6 +70,7 @@ export default function SettingsScreen({
   );
 }
 
+// Rad med en knapp som bytter mellom På og Av.
 function SoundRow({ label, value, onToggle }) {
   return (
     <View style={styles.row}>

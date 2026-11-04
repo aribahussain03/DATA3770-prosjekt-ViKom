@@ -3,6 +3,8 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { AppColors } from '../../theme/colors';
 import { Typography } from '../../theme/typography';
 
+// Tilbakeknapp og overskrift for skjermene mine. Midlertidig, til felles topplinje er klar.
+// `titleIcon` vises rett ved tittelen, og `children` helt til høyre.
 export default function MessagesHeader({ title, titleIcon, onBack, children }) {
   return (
     <View style={styles.header}>
@@ -18,17 +20,19 @@ export default function MessagesHeader({ title, titleIcon, onBack, children }) {
         </Pressable>
       ) : null}
 
-      <View style={styles.titleRow}>
-        <View style={styles.titleGroup}>
-          <Text accessibilityRole="header" style={styles.title}>
-            {title}
-          </Text>
+      {title ? (
+        <View style={styles.titleRow}>
+          <View style={styles.titleGroup}>
+            <Text accessibilityRole="header" style={styles.title}>
+              {title}
+            </Text>
 
-          {titleIcon}
+            {titleIcon}
+          </View>
+
+          {children}
         </View>
-
-        {children}
-      </View>
+      ) : null}
     </View>
   );
 }

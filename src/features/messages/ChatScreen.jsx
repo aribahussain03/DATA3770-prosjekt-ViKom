@@ -17,6 +17,7 @@ import { mockMessages } from '../../data/messagesMockData';
 import { AppColors } from '../../theme/colors';
 import MessagesHeader from './MessagesHeader';
 
+// Klokkeslett på norsk form, for eksempel 14.30.
 function currentTime() {
   const now = new Date();
   const hours = String(now.getHours()).padStart(2, '0');
@@ -24,6 +25,7 @@ function currentTime() {
   return `${hours}.${minutes}`;
 }
 
+// Viser én samtale. `conversation` trenger bare id og name, så en ny kontakt gir en tom chat.
 export default function ChatScreen({
   conversation,
   initialMessages,
@@ -40,8 +42,10 @@ export default function ChatScreen({
   const nextId = useRef(1);
   const listRef = useRef(null);
 
+  // Nye meldinger lagres bare på denne skjermen, og er borte når den lukkes.
   function sendMessage(text) {
     const message = {
+      // «new-» hindrer at id-en kolliderer med testdataene.
       id: `new-${nextId.current++}`,
       conversationId: conversation.id,
       sender: 'me',
@@ -68,6 +72,7 @@ export default function ChatScreen({
       </MessagesHeader>
 
       <View style={styles.avatarRow}>
+        {/* Kontakter uten bilde får forbokstaven i en sirkel. */}
         {conversation.picture ? (
           <Image source={conversation.picture} style={styles.avatar} />
         ) : (
