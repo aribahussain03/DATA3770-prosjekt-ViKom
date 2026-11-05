@@ -79,7 +79,7 @@ const styles = StyleSheet.create({
         flexDirection: 'row',
         backgroundColor: AppColors.background,
         paddingTop: 10,
-        paddingBottom: 8,
+        paddingBottom: 24,
     },
 
     item: {

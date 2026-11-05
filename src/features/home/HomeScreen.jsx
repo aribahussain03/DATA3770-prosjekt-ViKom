@@ -1,8 +1,9 @@
 import { router } from 'expo-router';
-import { Text, View } from "react-native";
+import { StyleSheet, Text, View } from "react-native";
 
 import BottomNavigation from '@/components/BottomNavigation';
 import HomeTile from '@/components/HomeTile';
+import { AppColors } from '@/theme/colors';
 
 // Hovedskjermen i ViKom. Herfra kan brukeren navigere til appens fire hovedfunksjoner.
 
@@ -92,7 +93,7 @@ const styles = StyleSheet.create({
     },
 
     row: {
-        flexDirecction: 'row',
+        flexDirection: 'row',
     },
 
     horizontalGap: {
