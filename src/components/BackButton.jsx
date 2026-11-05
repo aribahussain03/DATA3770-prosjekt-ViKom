@@ -1,18 +1,18 @@
-import { Pressable } from "react-native";
 import { router } from 'expo-router';
+import { Pressable, StyleSheet } from "react-native";
 
 import { AppColors } from '@/theme/colors';
 
 /**
  * Gjenbrukbar tilbakeknapp
- * Brukes på undersidersider der brukeren skal kunne gå tilbake.
+ * Brukes på undersider der brukeren skal kunne gå tilbake.
 */
 
 export default function BackButton() {
     return (
         <Pressable
             onPress={() => {
-                if (router.canGoBack)) {
+                if (router.canGoBack()) {
                     router.back();
                 } else {
                     router.replace('/home');
@@ -33,7 +33,7 @@ const styles = StyleSheet.create({
         width: 48,
         height: 48,
         justifyContent: 'center',
-        allignItems: 'center',
+        alignItems: 'center',
     },
 
     icon: {
