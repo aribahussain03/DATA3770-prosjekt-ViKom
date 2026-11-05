@@ -78,7 +78,7 @@ export default function RegisterScreen() {
                                 placeholderTextColor="#909090"
                                 value={phone}
                                 onChangeText={setPhone}
-                                autoCapitalize="phone-pad"
+                                keyboardType="phone-pad"
                                 autoComplete="tel"
                             />
                         </View>

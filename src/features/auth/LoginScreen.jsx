@@ -6,9 +6,9 @@ import {
     Pressable,
     ScrollView,
     StyleSheet,
-    View,
     Text,
     TextInput,
+    View,
 } from 'react-native';
 
 import { router } from 'expo-router';
@@ -55,7 +55,7 @@ export default function LoginScreen() {
 
     // Sjekker e-postfeltet i popup-vidnuet for glemt passord.
     const handleResetPassword = () => {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.trim())) {
             setResetError('Skriv inn en gyldig e-postadresse.');
             return;
         }
@@ -82,10 +82,10 @@ export default function LoginScreen() {
                         <TextInput
                             style={styles.input}
                             placeholder="skriv inn e-post"
-                            placeholderTextColor="#909090"}
+                            placeholderTextColor="#909090"
                             value={email}
                             onChangeText={setEmail}
-                            keyboardType="email-adress"
+                            keyboardType="email-address"
                             autoCapitalize="none"
                             autoComplete="email"
                         />
@@ -93,10 +93,10 @@ export default function LoginScreen() {
 
                     {/* Passord */}
                     <View style={styles.field}>
-                        <Text style={styles.label}>Password</Text>
+                        <Text style={styles.label}>Passord</Text>
                         <TextInput
                             style={styles.input}
-                            placeholder="Skriv inn password"
+                            placeholder="Skriv inn passord"
                             placeholderTextColor="#909090"
                             value={password}
                             onChangeText={setPassword}
@@ -140,7 +140,7 @@ export default function LoginScreen() {
 
                         <Pressable
                             style={({ pressed }) => [
-                                style.button,
+                                styles.button,
                                 styles.registerButton,
                                 pressed && styles.pressed,
                             ]}
@@ -148,7 +148,7 @@ export default function LoginScreen() {
                             accessibilityRole="button"
                         >
                             <Text style={styles.buttonText}>
-                                Register
+                                Registrer
                             </Text>                        
                         </Pressable>
                     </View>
@@ -179,7 +179,7 @@ export default function LoginScreen() {
                             placeholderTextColor="#909090"
                             value={resetEmail}
                             onChangeText={setResetEmail}
-                            keyboardType="email-adress"
+                            keyboardType="email-address"
                             autoCapitalize="none"
                             autoComplete="email"
                         />
@@ -272,7 +272,7 @@ const styles = StyleSheet.create({
 
     error: {
         marginTop: 12,
-        color: '#B0020',
+        color: '#B00020',
         fotnSize: 14,
     },
 
