@@ -3,7 +3,6 @@ import { useRouter } from 'expo-router';
 import { useState } from 'react';
 import { FlatList, StyleSheet, Text, TextInput, TouchableOpacity, View } from 'react-native';
 
-// Mock-data for kontakter
 const INITIAL_CONTACTS = [
   { id: '1', name: 'Mamma', isFavorite: true, phone: '12345678' },
   { id: '2', name: 'Anne Sofie', isFavorite: false, phone: '87654321' },
@@ -16,11 +15,12 @@ export default function HovedskjermKontakter() {
   const router = useRouter();
   const [searchQuery, setSearchQuery] = useState('');
   const [contacts, setContacts] = useState(INITIAL_CONTACTS);
+  // Vi holder styr på aktiv visning: 'søk' eller 'favoritter'
+  const [activeTab, setActiveTab] = useState('søk');
 
-  // Funksjon for å endre favoritt-status når man trykker på stjernen
   const toggleFavorite = (id, event) => {
     if (event && event.stopPropagation) {
-      event.stopPropagation(); // Hindrer at kortet åpnes når man trykker på stjernen
+      event.stopPropagation();
     }
     setContacts(prevContacts =>
       prevContacts.map(contact =>
@@ -29,16 +29,41 @@ export default function HovedskjermKontakter() {
     );
   };
 
-  const filteredContacts = contacts.filter(contact =>
-    contact.name.toLowerCase().includes(searchQuery.toLowerCase())
-  );
+  const filteredContacts = contacts.filter(contact => {
+    const matchesSearch = contact.name.toLowerCase().includes(searchQuery.toLowerCase());
+    if (activeTab === 'favoritter') {
+      return matchesSearch && contact.isFavorite;
+    }
+    return matchesSearch;
+  });
 
   return (
     <View style={styles.container}>
       <Text style={styles.headerTitle}>Kontakter</Text>
 
-      {/* Søkefelt og Favoritter-knapp (navigerer til Favoritter-siden) */}
-      <View style={styles.searchRow}>
+      {/* Topp-linje med de to navigasjonsknappene / fanene */}
+      <View style={styles.topNavRow}>
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 'søk' && styles.tabButtonActive]}
+          onPress={() => setActiveTab('søk')}
+        >
+          <Text style={[styles.tabButtonText, activeTab === 'søk' && styles.tabButtonTextActive]}>
+            Søk kontakter
+          </Text>
+        </TouchableOpacity>
+
+        <TouchableOpacity 
+          style={[styles.tabButton, activeTab === 'favoritter' && styles.tabButtonActive]}
+          onPress={() => setActiveTab('favoritter')}
+        >
+          <Text style={[styles.tabButtonText, activeTab === 'favoritter' && styles.tabButtonTextActive]}>
+            Favoritter
+          </Text>
+        </TouchableOpacity>
+      </View>
+
+      {/* Søkefeltet vises kun når man er på "Søk kontakter"-visningen */}
+      {activeTab === 'søk' && (
         <View style={styles.searchBox}>
           <Ionicons name="search" size={20} color="#333" style={styles.searchIcon} />
           <TextInput
@@ -49,15 +74,7 @@ export default function HovedskjermKontakter() {
             onChangeText={setSearchQuery}
           />
         </View>
-
-        <TouchableOpacity 
-          style={styles.favoritesButton}
-          onPress={() => router.push('/contacts/Favoritter')}
-        >
-          <Text style={styles.favoritesButtonText}>Favoritter</Text>
-          <Ionicons name="star" size={18} color="#FFD700" />
-        </TouchableOpacity>
-      </View>
+      )}
 
       {/* Kontaktliste */}
       <FlatList
@@ -76,7 +93,6 @@ export default function HovedskjermKontakter() {
               <Text style={styles.contactName}>{item.name}</Text>
             </View>
 
-            {/* Klikkbar stjerne i listen */}
             <TouchableOpacity 
               onPress={(e) => toggleFavorite(item.id, e)}
               style={styles.starButton}
@@ -109,21 +125,39 @@ const styles = StyleSheet.create({
     marginBottom: 20,
     color: '#000',
   },
-  searchRow: {
+  topNavRow: {
     flexDirection: 'row',
-    marginBottom: 20,
-    alignItems: 'center',
+    marginBottom: 15,
     justifyContent: 'space-between',
   },
-  searchBox: {
+  tabButton: {
     flex: 1,
+    backgroundColor: '#F0F0F0',
+    paddingVertical: 12,
+    borderRadius: 8,
+    alignItems: 'center',
+    marginHorizontal: 4,
+  },
+  tabButtonActive: {
+    backgroundColor: '#0066CC',
+  },
+  tabButtonText: {
+    fontSize: 15,
+    fontWeight: '500',
+    color: '#000',
+  },
+  tabButtonTextActive: {
+    color: '#FFFFFF',
+    fontWeight: 'bold',
+  },
+  searchBox: {
     flexDirection: 'row',
     backgroundColor: '#F0F0F0',
     borderRadius: 8,
     alignItems: 'center',
     paddingHorizontal: 10,
     height: 48,
-    marginRight: 10,
+    marginBottom: 20,
   },
   searchIcon: {
     marginRight: 8,
@@ -131,21 +165,6 @@ const styles = StyleSheet.create({
   input: {
     flex: 1,
     fontSize: 16,
-    color: '#000',
-  },
-  favoritesButton: {
-    flexDirection: 'row',
-    backgroundColor: '#F0F0F0',
-    paddingHorizontal: 12,
-    height: 48,
-    borderRadius: 8,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  favoritesButtonText: {
-    fontSize: 16,
-    fontWeight: '500',
-    marginRight: 4,
     color: '#000',
   },
   contactCard: {
