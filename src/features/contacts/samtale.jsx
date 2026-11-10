@@ -41,10 +41,14 @@ export default function SamtaleScreen() {
           <Ionicons name="chatbubble" size={28} color="#0066CC" />
         </TouchableOpacity>
 
-        {/* Knapp 3: Videosamtale (Navigerer til videosamtalelisten eller oppstart) */}
+        {/* Knapp 3: Videosamtale (Starter aktiv video eller går til liste) */}
         <TouchableOpacity 
           style={styles.iconButton} 
-          onPress={() => router.push('/contacts/VideosamtaleListe')}
+          onPress={() => {
+            console.log(`Starter aktiv videosamtale med ${contactName}`);
+            // Du kan eventuelt beholde router.push her om man skal tilbake til listen:
+            // router.push('/contacts/VideosamtaleListe');
+          }}
         >
           <Ionicons name="videocam" size={28} color="#0066CC" />
         </TouchableOpacity>
@@ -86,7 +90,7 @@ const styles = StyleSheet.create({
   },
   menuContainer: {
     flexDirection: 'row',
-    backgroundColor: '#E3F2FD', // Lyseblå boks bak knappene som i skjermbilde 11
+    backgroundColor: '#E3F2FD',
     borderRadius: 40,
     paddingVertical: 18,
     paddingHorizontal: 30,

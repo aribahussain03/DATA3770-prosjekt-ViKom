@@ -65,9 +65,12 @@ export default function VideosamtaleListe() {
               style={[styles.videoBtn, { backgroundColor: item.online ? '#0066CC' : '#CCCCCC' }]}
               onPress={() => {
                 if(item.online) {
-                  console.log(`Starter videosamtale med ${item.name}`);
-                }
-              }}
+                  router.push({
+        pathname: '/contacts/samtale',
+        params: { name: item.name }
+                });
+              }
+            }}
             >
               <Ionicons name="videocam" size={20} color="#FFF" />
             </TouchableOpacity>
