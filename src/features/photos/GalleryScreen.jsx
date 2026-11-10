@@ -8,7 +8,7 @@ import { AppColors } from '../../theme/colors';
 import MessagesHeader from '../messages/MessagesHeader';
 import PhotoButton from './PhotoButton';
 
-// Viser eksempelbildene fra Figma, ikke bildene på telefonen.
+// Viser eksempelbildene fra Figma, ikke bildene på telefonen siden dette foreløpig kun er testdata.
 export default function GalleryScreen({
   photos = mockGalleryPhotos,
   onBack,
