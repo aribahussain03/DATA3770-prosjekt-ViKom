@@ -66,11 +66,11 @@ export default function VideosamtaleListe() {
               onPress={() => {
                 if(item.online) {
                   router.push({
-        pathname: '/contacts/samtale',
-        params: { name: item.name }
-                });
-              }
-            }}
+                    pathname: '/contacts/samtale',
+                    params: { name: item.name, initialCall: 'video' }
+                  });
+                }
+              }}
             >
               <Ionicons name="videocam" size={20} color="#FFF" />
             </TouchableOpacity>
