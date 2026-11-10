@@ -6,11 +6,16 @@ import RequestPermissionsScreen from './RequestPermissionsScreen';
 
 const exampleImages = ['🌸', '🌻', '🌿', '🦋'];
 
-export default function ProfileFlow() {
+export default function ProfileFlow({ onScreenChange }) {
   const [screen, setScreen] = useState('profile');
 
   const { profileImage, setProfileImage } = usePermissions();
-
+  
+  function changeScreen(nextScreen) {
+    setScreen(nextScreen);
+    onScreenChange?.(nextScreen);
+  }
+  
   function changeImage() {
     const currentIndex = exampleImages.indexOf(profileImage);
     const nextIndex = (currentIndex + 1) % exampleImages.length;
@@ -21,7 +26,7 @@ export default function ProfileFlow() {
   if (screen === 'permissions') {
     return (
       <RequestPermissionsScreen
-        onBack={() => setScreen('profile')}
+        onBack={() => changeScreen('profile')}
       />
     );
   }
@@ -29,7 +34,7 @@ export default function ProfileFlow() {
   return (
     <ProfileScreen
       onChangeImage={changeImage}
-      onRequestPermissions={() => setScreen('permissions')}
+      onRequestPermissions={() => changeScreen('permissions')}
     />
   );
 }
