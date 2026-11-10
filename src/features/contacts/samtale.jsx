@@ -8,7 +8,11 @@ export default function SamtaleScreen() {
   const params = useLocalSearchParams();
   const contactName = params.name || 'Mamma';
 
-  // Hvis man kommer fra videosamtale-listen, starter vi rett på 'ringing-video'
+  // ==========================================
+  // 1. TILSTANDER (STATE) - Må ligge øverst her
+  // ==========================================
+  const [isFavorite, setIsFavorite] = useState(params.isFavorite === 'true');
+
   const [callState, setCallState] = useState(
     params.initialCall === 'video' ? 'ringing-video' : 'idle'
   );
@@ -28,6 +32,19 @@ export default function SamtaleScreen() {
     return () => clearTimeout(timer);
   }, [callState]);
 
+  // ==========================================
+  // 2. FUNKSJONER - Plassert før return()
+  // ==========================================
+  const toggleFavorite = () => {
+    const newFavoriteStatus = !isFavorite;
+    setIsFavorite(newFavoriteStatus);
+    // Oppdaterer parameteren slik at den merkes av når du går tilbake til oversikten
+    router.setParams({ isFavorite: newFavoriteStatus.toString() });
+  };
+
+  // ==========================================
+  // 3. UI / VISUELL STRUKTUR (Inne i return)
+  // ==========================================
   return (
     <View style={styles.container}>
       {/* Tilbakeknapp (vises kun i idle-modus) */}
@@ -49,7 +66,7 @@ export default function SamtaleScreen() {
         </View>
       )}
 
-      {/* 1. STANDARD VISNING */}
+      {/* STANDARD VISNING (Hovedmeny og trykkbar favoritt-stjerne) */}
       {callState === 'idle' && (
         <>
           <View style={styles.menuContainer}>
@@ -75,14 +92,19 @@ export default function SamtaleScreen() {
             </TouchableOpacity>
           </View>
 
-          <View style={styles.favoriteSection}>
-            <Ionicons name="star" size={32} color="#FFD700" />
+          {/* Trykkbar favorittseksjon med dynamisk gul/grå stjerne */}
+          <TouchableOpacity style={styles.favoriteSection} onPress={toggleFavorite}>
+            <Ionicons 
+              name={isFavorite ? "star" : "star-outline"} 
+              size={32} 
+              color={isFavorite ? "#FFD700" : "#888"} 
+            />
             <Text style={styles.favoriteText}>Favoritter</Text>
-          </View>
+          </TouchableOpacity>
         </>
       )}
 
-      {/* 2. RINGER-VISNING */}
+      {/* RINGER-VISNING */}
       {(callState === 'ringing-audio' || callState === 'ringing-video') && (
         <View style={styles.centerContainer}>
           <Text style={styles.actionLabel}>Avbryt</Text>
@@ -95,7 +117,7 @@ export default function SamtaleScreen() {
         </View>
       )}
 
-      {/* 3A. AKTIV VANLIG SAMTALE */}
+      {/* AKTIV VANLIG SAMTALE */}
       {callState === 'audio-calling' && (
         <View style={styles.centerContainer}>
           <View style={styles.audioControlsBox}>
@@ -117,7 +139,7 @@ export default function SamtaleScreen() {
         </View>
       )}
 
-      {/* 3B. AKTIV VIDEOSAMTALE */}
+      {/* AKTIV VIDEOSAMTALE */}
       {callState === 'video-calling' && (
         <View style={styles.videoCallContainer}>
           <View style={styles.remoteVideoArea}>
@@ -153,7 +175,7 @@ export default function SamtaleScreen() {
         </View>
       )}
 
-      {/* 4. AVSLUTTET SAMTALE */}
+      {/* AVSLUTTET SAMTALE */}
       {callState === 'ended' && (
         <View style={styles.centerContainer}>
           <TouchableOpacity 
@@ -174,8 +196,10 @@ export default function SamtaleScreen() {
   );
 }
 
+// ==========================================
+// 4. STILSETT (STYLESHEET)
+// ==========================================
 const styles = StyleSheet.create({
-  // Felles oppsett og layout
   container: {
     flex: 1,
     backgroundColor: '#FFFFFF',
@@ -209,8 +233,6 @@ const styles = StyleSheet.create({
     marginTop: 15,
     fontWeight: '400',
   },
-
-  // Meny / Knapper på hovedsiden
   menuContainer: {
     flexDirection: 'row',
     backgroundColor: '#E3F2FD',
@@ -245,8 +267,6 @@ const styles = StyleSheet.create({
     color: '#000000',
     fontWeight: '500',
   },
-
-  // Samtale og Avbryt-visning
   centerContainer: {
     alignItems: 'center',
     marginTop: 30,
@@ -299,8 +319,6 @@ const styles = StyleSheet.create({
   controlButtonSmall: {
     padding: 10,
   },
-
-  // Videosamtale spesifikt
   videoCallContainer: {
     flex: 1,
     position: 'absolute',
@@ -366,8 +384,6 @@ const styles = StyleSheet.create({
     shadowRadius: 2,
     elevation: 2,
   },
-
-  // Avsluttet samtale / OK-knapp
   okButton: {
     backgroundColor: '#90CAF9',
     width: '80%',
@@ -375,7 +391,7 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     alignItems: 'center',
   },
-    okButtonText: {
+  okButtonText: {
     fontSize: 22,
     fontWeight: '500',
     color: '#000000',

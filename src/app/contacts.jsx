@@ -4,7 +4,6 @@ import BottomNavigation from "@/components/BottomNavigation";
 import Kontakter from '@/features/contacts/Kontakter';
 import { AppColors } from '@/theme/colors';
 
-// Midlertidig kontaktside
 export default function ContactsRoute() {
     return (
         <View style={styles.container}>
