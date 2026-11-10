@@ -1,44 +1,45 @@
-import { useState } from 'react';
-import { FlatList, StyleSheet, Switch, Text, View } from 'react-native';
-import { AppColors } from '../../theme/colors';
-import { Typography } from '../../theme/typography';
+import { Ionicons } from '@expo/vector-icons';
+import { useRouter } from 'expo-router';
+import { FlatList, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-const initialContacts = [
-  { id: '1', name: 'Hjemmetjenesten - Dagvakt', role: 'Sykepleier', isFavorite: true },
-  { id: '2', name: 'Kari Nordmann', role: 'Pårørende (Datter)', isFavorite: true },
-  { id: '3', name: 'Ola Nordmann', role: 'Pårørende (Sønn)', isFavorite: false },
-  { id: '4', name: 'Fastlegekontoret', role: 'Lege', isFavorite: false },
+const FAVORITES_DATA = [
+  { id: '1', name: 'Mamma' },
+  { id: '2', name: 'Pappa' },
+  { id: '3', name: 'Mariam' },
+  { id: '4', name: 'Mohammed' },
 ];
 
-export default function FavoritesScreen() {
-  const [contacts, setContacts] = useState(initialContacts);
-
-  const toggleFavorite = (id) => {
-    setContacts(prev =>
-      prev.map(c => (c.id === id ? { ...c, isFavorite: !c.isFavorite } : c))
-    );
-  };
+export default function Favoritter() {
+  const router = useRouter();
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Rediger favoritter</Text>
-      <Text style={styles.subHeader}>Velg hvem som skal vises under dine favoritter</Text>
+      <Text style={styles.headerTitle}>Kontakter</Text>
+
+      <View style={styles.topBar}>
+        <View style={styles.titleRow}>
+          <Text style={styles.subHeader}>Favoritter</Text>
+          <Ionicons name="star" size={24} color="#FFD700" style={{ marginLeft: 6 }} />
+        </View>
+        <TouchableOpacity style={styles.editButton}>
+          <Ionicons name="pencil" size={16} color="#FFF" style={{ marginRight: 6 }} />
+          <Text style={styles.editButtonText}>Rediger Favoritter</Text>
+        </TouchableOpacity>
+      </View>
 
       <FlatList
-        data={contacts}
+        data={FAVORITES_DATA}
         keyExtractor={(item) => item.id}
+        numColumns={3}
+        contentContainerStyle={styles.gridContainer}
         renderItem={({ item }) => (
-          <View style={styles.contactRow}>
-            <View>
-              <Text style={styles.contactName}>{item.name}</Text>
-              <Text style={styles.contactRole}>{item.role}</Text>
-            </View>
-            <Switch
-              value={item.isFavorite}
-              onValueChange={() => toggleFavorite(item.id)}
-              trackColor={{ false: '#767577', true: AppColors.primary || '#007AFF' }}
-            />
-          </View>
+          <TouchableOpacity 
+            style={styles.gridCard}
+            onPress={() => router.push({ pathname: '/contacts/samtale', params: { name: item.name } })}
+          >
+            <Ionicons name="person-circle" size={50} color="#000" />
+            <Text style={styles.gridName}>{item.name}</Text>
+          </TouchableOpacity>
         )}
       />
     </View>
@@ -48,35 +49,68 @@ export default function FavoritesScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: AppColors.background || '#f5f5f5',
-    padding: 16,
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingTop: 60,
   },
-  header: {
-    ...Typography.header,
-    fontSize: 22,
-    marginBottom: 4,
+  headerTitle: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    textAlign: 'center',
+    marginBottom: 20,
+    color: '#000',
+  },
+  topBar: {
+    marginBottom: 20,
+  },
+  titleRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
   },
   subHeader: {
-    fontSize: 14,
-    color: '#666',
-    marginBottom: 16,
-  },
-  contactRow: {
-    backgroundColor: '#fff',
-    padding: 16,
-    borderRadius: 8,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    marginBottom: 8,
-    elevation: 1,
-  },
-  contactName: {
-    fontSize: 16,
+    fontSize: 24,
     fontWeight: 'bold',
+    color: '#000',
   },
-  contactRole: {
+  editButton: {
+    flexDirection: 'row',
+    backgroundColor: '#0066CC',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+    borderRadius: 25,
+    alignSelf: 'flex-start',
+    alignItems: 'center',
+  },
+  editButtonText: {
+    color: '#FFF',
+    fontSize: 15,
+    fontWeight: '600',
+  },
+  gridContainer: {
+    justifyContent: 'space-between',
+  },
+  gridCard: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+    borderRadius: 16,
+    padding: 15,
+    alignItems: 'center',
+    margin: 6,
+    borderWidth: 1,
+    borderColor: '#E0E0E0',
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.1,
+    shadowRadius: 2,
+    elevation: 2,
+    maxWidth: '31%',
+  },
+  gridName: {
+    marginTop: 8,
     fontSize: 14,
-    color: '#666',
+    fontWeight: '500',
+    textAlign: 'center',
+    color: '#000',
   },
 });

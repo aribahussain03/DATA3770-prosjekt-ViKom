@@ -1,46 +1,60 @@
-import { useState } from 'react';
-import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
-import { AppColors } from '../../theme/colors';
+import { Feather, Ionicons } from '@expo/vector-icons';
+import { useLocalSearchParams, useRouter } from 'expo-router';
+import { Image, StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
-export default function CallScreen() {
-  // Status kan være 'ringing', 'active' eller 'ended'
-  const [callStatus, setCallStatus] = useState('active'); 
+export default function SamtaleScreen() {
+  const router = useRouter();
+  const params = useLocalSearchParams();
+  const contactName = params.name || 'Mamma';
 
   return (
     <View style={styles.container}>
-      {callStatus === 'ringing' && (
-        <View style={styles.centerContent}>
-          <Text style={styles.statusText}>Ringer opp...</Text>
-          <Text style={styles.nameText}>Kari Nordmann</Text>
-          <TouchableOpacity style={styles.endButton} onPress={() => setCallStatus('ended')}>
-            <Text style={styles.buttonText}>Avbryt</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Tilbakeknapp */}
+      <TouchableOpacity style={styles.backButton} onPress={() => router.back()}>
+        <Feather name="arrow-left" size={28} color="black" />
+      </TouchableOpacity>
 
-      {callStatus === 'active' && (
-        <View style={styles.centerContent}>
-          <Text style={styles.statusText}>Aktiv videosamtale</Text>
-          <Text style={styles.nameText}>Kari Nordmann</Text>
-          
-          <View style={styles.videoPlaceholder}>
-            <Text style={styles.videoPlaceholderText}>[ Videobilde / Kamera ]</Text>
-          </View>
+      {/* Profilbilde og Navn */}
+      <View style={styles.profileSection}>
+        <Image 
+          source={{ uri: 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=300&auto=format&fit=crop' }} 
+          style={styles.avatar} 
+        />
+        <Text style={styles.name}>{contactName}</Text>
+      </View>
 
-          <TouchableOpacity style={styles.endButton} onPress={() => setCallStatus('ended')}>
-            <Text style={styles.buttonText}>Avslutt samtalen</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+      {/* Knappemeny (Ring, Melding, Videosamtale) */}
+      <View style={styles.menuContainer}>
+        {/* Knapp 1: Vanlig samtale / Ring */}
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => console.log('Ringer...')}
+        >
+          <Ionicons name="call" size={28} color="#0066CC" />
+        </TouchableOpacity>
 
-      {callStatus === 'ended' && (
-        <View style={styles.centerContent}>
-          <Text style={styles.statusText}>Samtalen er avsluttet</Text>
-          <TouchableOpacity style={styles.callButton} onPress={() => setCallStatus('active')}>
-            <Text style={styles.buttonText}>Ring opp igjen</Text>
-          </TouchableOpacity>
-        </View>
-      )}
+        {/* Knapp 2: Melding / Chat */}
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => router.push('/meldinger')} 
+        >
+          <Ionicons name="chatbubble" size={28} color="#0066CC" />
+        </TouchableOpacity>
+
+        {/* Knapp 3: Videosamtale (Navigerer til videosamtalelisten eller oppstart) */}
+        <TouchableOpacity 
+          style={styles.iconButton} 
+          onPress={() => router.push('/contacts/VideosamtaleListe')}
+        >
+          <Ionicons name="videocam" size={28} color="#0066CC" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Favoritt-merking under */}
+      <View style={styles.favoriteSection}>
+        <Ionicons name="star" size={32} color="#FFD700" />
+        <Text style={styles.favoriteText}>Favoritter</Text>
+      </View>
     </View>
   );
 }
@@ -48,54 +62,60 @@ export default function CallScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#111',
+    backgroundColor: '#FFFFFF',
+    paddingHorizontal: 20,
+    paddingTop: 60,
+  },
+  backButton: {
+    marginBottom: 10,
+  },
+  profileSection: {
+    alignItems: 'center',
+    marginTop: 20,
+  },
+  avatar: {
+    width: 130,
+    height: 130,
+    borderRadius: 65,
+    marginBottom: 15,
+  },
+  name: {
+    fontSize: 32,
+    fontWeight: 'bold',
+    color: '#000000',
+  },
+  menuContainer: {
+    flexDirection: 'row',
+    backgroundColor: '#E3F2FD', // Lyseblå boks bak knappene som i skjermbilde 11
+    borderRadius: 40,
+    paddingVertical: 18,
+    paddingHorizontal: 30,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginTop: 40,
+    marginHorizontal: 10,
+  },
+  iconButton: {
+    backgroundColor: '#FFFFFF',
+    width: 65,
+    height: 65,
+    borderRadius: 32.5,
     justifyContent: 'center',
     alignItems: 'center',
-    padding: 20,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.15,
+    shadowRadius: 4,
+    elevation: 3,
   },
-  centerContent: {
+  favoriteSection: {
     alignItems: 'center',
-    width: '100%',
+    marginTop: 60,
   },
-  statusText: {
-    color: '#aaa',
-    fontSize: 16,
-    marginBottom: 8,
-  },
-  nameText: {
-    color: '#fff',
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 30,
-  },
-  videoPlaceholder: {
-    width: '100%',
-    height: 300,
-    backgroundColor: '#333',
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderRadius: 12,
-    marginBottom: 40,
-  },
-  videoPlaceholderText: {
-    color: '#888',
-    fontSize: 16,
-  },
-  endButton: {
-    backgroundColor: '#ff3b30',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-  },
-  callButton: {
-    backgroundColor: AppColors.primary || '#007AFF',
-    paddingVertical: 14,
-    paddingHorizontal: 32,
-    borderRadius: 30,
-  },
-  buttonText: {
-    color: '#fff',
-    fontSize: 16,
-    fontWeight: 'bold',
+  favoriteText: {
+    fontSize: 18,
+    marginTop: 8,
+    color: '#000000',
+    fontWeight: '500',
   },
 });
