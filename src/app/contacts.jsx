@@ -1,6 +1,7 @@
-import { StyleSheet, Text, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 
 import BottomNavigation from "@/components/BottomNavigation";
+import Kontakter from '@/features/contacts/Kontakter';
 import { AppColors } from '@/theme/colors';
 
 // Midlertidig kontaktside
@@ -8,7 +9,7 @@ export default function ContactsRoute() {
     return (
         <View style={styles.container}>
             <View style={styles.content}>
-                <Text style={styles.title}>Kontakter</Text>
+                <Kontakter />
             </View>
 
             <BottomNavigation activeTab="contacts" />

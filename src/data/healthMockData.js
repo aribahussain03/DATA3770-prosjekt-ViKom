@@ -1,37 +1,55 @@
-export const mockAppointments = [
-  {
-    id: '1',
-    text: 'Besøk av hjemmetjeneste i dag kl. 13.00.',
+export const healthDataByPerson = {
+  mamma: {
+    appointments: [
+      {
+        id: 'mamma-appointment-1',
+        text: 'Besøk av hjemmetjenesten i dag kl. 13.00.',
+      },
+      {
+        id: 'mamma-appointment-2',
+        text: 'Time hos fysioterapeut i morgen kl. 10.00.',
+      },
+    ],
+    medications: [
+      {
+        id: 'mamma-medication-1',
+        time: 'Kl. 08.00',
+        name: 'Eksempelmedisin A',
+        details: 'Eksempeldata for Mamma.',
+      },
+      {
+        id: 'mamma-medication-2',
+        time: 'Kl. 16.00',
+        name: 'Eksempelmedisin B',
+        details: 'Eksempeldata for Mamma.',
+      },
+    ],
   },
-  {
-    id: '2',
-    text: 'Time hos Fürst den 13.10. kl. 11.30.',
+  pappa: {
+    appointments: [
+      {
+        id: 'pappa-appointment-1',
+        text: 'Time hos fastlegen i morgen kl. 09.30.',
+      },
+      {
+        id: 'pappa-appointment-2',
+        text: 'Besøk av hjemmetjenesten fredag kl. 12.00.',
+      },
+    ],
+    medications: [
+      {
+        id: 'pappa-medication-1',
+        time: 'Kl. 09.00',
+        name: 'Eksempelmedisin C',
+        details: 'Eksempeldata for Pappa.',
+      },
+    ],
   },
-  {
-    id: '3',
-    text: 'Time hos fysioterapeut den 27.10. kl. 10.00.',
-  },
-  {
-    id: '4',
-    text: 'Besøk av hjemmetjeneste den 28.10. kl. 11.45.',
-  },
-  {
-    id: '5',
-    text: 'Besøk av hjemmetjeneste den 29.10. kl. 12.30.',
-  },
-];
+};
 
-export const mockMedications = [
-  {
-    id: '1',
-    time: 'Kl. 08.00',
-    name: 'Eksempelmedisin A',
-    details: 'Eksempel på dose og instruksjon.',
-  },
-  {
-    id: '2',
-    time: 'Kl. 16.00',
-    name: 'Eksempelmedisin B',
-    details: 'Eksempel på dose og instruksjon.',
-  },
-];
+// Beholder eksportene som de eksisterende skjermene bruker.
+export const mockAppointments =
+  healthDataByPerson.mamma.appointments;
+
+export const mockMedications =
+  healthDataByPerson.mamma.medications;

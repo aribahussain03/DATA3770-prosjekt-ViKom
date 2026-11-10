@@ -4,38 +4,60 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 import AppDialog from '../../components/AppDialog';
 import HealthScreenLayout from '../../components/HealthScreenLayout';
 import HealthTile from '../../components/HealthTile';
+import { usePermissions } from '../../context/PermissionsContext';
 
 export default function HealthOverviewScreen({
-  personName = 'Mamma',
-  permissions = {
-    appointments: true,
-    medications: true,
-    homeCare: true,
-  },
   onBack,
   onOpenAppointments,
   onOpenMedications,
   onOpenHomeCare,
 }) {
+  const {
+    selectedPerson,
+    permissions,
+    permissionStatuses,
+    requestPermission,
+  } = usePermissions();
+
   const [dialog, setDialog] = useState(null);
+  const [requestedSection, setRequestedSection] = useState(null);
 
   function openSection(section, action) {
+    // Godkjent tilgang fra profilen åpner siden direkte.
     if (permissions[section]) {
       action?.();
       return;
     }
 
-    setDialog(section === 'homeCare' ? 'homeCare' : 'request');
+    // En eksisterende forespørsel skal ikke sendes på nytt.
+    if (permissionStatuses[section] === 'pending') {
+      setDialog('pending');
+      return;
+    }
+
+    setRequestedSection(section);
+    setDialog('request');
+  }
+
+  function sendRequest() {
+    if (!requestedSection) {
+      return;
+    }
+
+    // Beholder simulert godkjenning fra helseoversikten.
+    requestPermission(requestedSection);
+    setDialog('sent');
   }
 
   function closeDialog() {
     setDialog(null);
+    setRequestedSection(null);
   }
 
   return (
     <HealthScreenLayout
       title="Helseoversikt"
-      personName={personName}
+      personName={selectedPerson.name}
       onBack={onBack}
     >
       <ScrollView contentContainerStyle={styles.content}>
@@ -60,7 +82,7 @@ export default function HealthOverviewScreen({
 
           <View style={styles.tile}>
             <HealthTile
-              title="Kontakt hjemmetjeneste"
+              title={'Kontakt\nhjemmetjenesten'}
               onPress={() =>
                 openSection('homeCare', onOpenHomeCare)
               }
@@ -72,25 +94,27 @@ export default function HealthOverviewScreen({
       <AppDialog
         visible={dialog === 'request'}
         title="Tilgang"
-        message="Du har ikke tilgang til denne informasjonen. Vil du spørre om tilgang?"
+        message={`Du har ikke tilgang til disse opplysningene om ${selectedPerson.name}. Vil du spørre om tilgang?`}
         confirmLabel="Send forespørsel"
         cancelLabel="Avbryt"
-        onConfirm={() => setDialog('sent')}
+        onConfirm={sendRequest}
         onClose={closeDialog}
       />
 
       <AppDialog
         visible={dialog === 'sent'}
         title="Sendt"
-        message="Forespørsel er sendt."
+        message="Forespørsel om tilgang er sendt."
+        confirmLabel="OK"
         onConfirm={closeDialog}
         onClose={closeDialog}
       />
 
       <AppDialog
-        visible={dialog === 'homeCare'}
-        title="Tilgang"
-        message="Du har ikke tilgang til hjemmetjeneste. Personen må gi tilgang gjennom ViKom."
+        visible={dialog === 'pending'}
+        title="Venter på godkjenning"
+        message={`Du har allerede sendt en forespørsel om tilgang til disse opplysningene om ${selectedPerson.name}. Du kan følge statusen i profilen.`}
+        confirmLabel="OK"
         onConfirm={closeDialog}
         onClose={closeDialog}
       />
