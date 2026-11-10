@@ -1,5 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { StyleSheet, Text, View } from "react-native";
+import { Image, StyleSheet, View } from "react-native";
 
 import BottomNavigation from '@/components/BottomNavigation';
 import HomeTile from '@/components/HomeTile';
@@ -14,8 +15,16 @@ export default function HomeScreen() {
             Bruker midlertidig tekst/symbol frem til de riktige
             elementene fra Figma kobles inn. */}
             <View style={styles.header}>
-                <Text style={styles.logo}>ViKom</Text>
-                <Text style={styles.settings}>⚙</Text>
+                <Image
+                    source={require('../../../assets/images/vikom-logo.png')}
+                    style={styles.logo}
+                    resizeMode='contain'
+                />
+                <Ionicons
+                    name="settings-outline"
+                    size={34}
+                    color="#000000"
+                />
             </View>
 
             {/* Hovedfunksjonen på forsiden. */}
@@ -23,7 +32,7 @@ export default function HomeScreen() {
                 <View style={styles.row}>
                     <HomeTile
                         title="Videosamtale"
-                        icon={<Text style={styles.tileIcon}>▣</Text>}
+                        icon={<Ionicons name="videocam" size={60} color="#000000" />}
                         onPress={() => router.push('/video-call')}
                     />
 
@@ -31,7 +40,7 @@ export default function HomeScreen() {
 
                     <HomeTile
                         title="Send bilde"
-                        icon={<Text style={styles.tileIcon}>▧</Text>}
+                        icon={<Ionicons name="images" size={60} color="#000000" />}
                         onPress={() => router.push('/send-image')}
                     />
                 </View>
@@ -41,7 +50,7 @@ export default function HomeScreen() {
                 <View style={styles.row}>
                     <HomeTile
                         title="Send melding"
-                        icon={<Text style={styles.tileIcon}>•••</Text>}
+                        icon={<Ionicons name="chatbubble" size={60} color="#000000" />}
                         onPress={() => router.push('/messages')}
                     />      
 
@@ -49,7 +58,7 @@ export default function HomeScreen() {
 
                     <HomeTile
                         title="Helse og avtaler"
-                        icon={<Text style={styles.tileIcon}>+</Text>}
+                        icon={<Ionicons name="medkit" size={60} color="#000000" />}
                         onPress={() => router.push('/health')}
                     />  
                 </View>
@@ -78,9 +87,9 @@ const styles = StyleSheet.create({
     },
 
     logo: {
-        fontSize: 34,
-        fontWeight: '700',
-        color: AppColors.primary,
+        width: 150,
+        height: 60,
+        marginTop: 15,
     },
 
     settings: {
@@ -90,6 +99,7 @@ const styles = StyleSheet.create({
 
     grid: {
         paddingHorizontal: 24,
+        marginTop: 70,
     },
 
     row: {

@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+// import { Feather, MaterialIcons, FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
@@ -14,19 +16,19 @@ export default function BottomNavigation({ activeTab = 'home'}) {
     {    
         id: 'home',
         label: 'Hjem',
-        icon: '⌂',
+        icon: 'home-outline',
         route: '/home',
     },
     {
         id: 'contacts',
         label: 'Kontakter',
-        icon: '▣',
+        icon: 'id-card-outline',
         route: '/contacts',
     },
     {
         id: 'profile',
         label: 'Profil',
-        icon: '●',
+        icon: 'person-circle-outline',
         route: '/profile',
     },
 ];
@@ -50,14 +52,11 @@ return (
                     accessibilityLabel={`Gå til ${item.label}`}
                     accessibilityState={{ selected: isActive }}
                 >
-                    <Text
-                        style={[
-                            styles.icon,
-                            isActive && styles.active,
-                        ]}
-                    >
-                        {item.icon}
-                    </Text>
+                    <Ionicons
+                        name={item.icon}
+                        size={34}
+                        color={isActive ? AppColors.primary : '#000000'}
+                    />
 
                     <Text
                         style={[
