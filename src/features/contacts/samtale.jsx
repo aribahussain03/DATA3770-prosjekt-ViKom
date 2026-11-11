@@ -12,7 +12,11 @@ export default function SamtaleScreen() {
   const [isFavorite, setIsFavorite] = useState(params.isFavorite === 'true');
 
   const [callState, setCallState] = useState(
-    params.initialCall === 'video' ? 'ringing-video' : 'idle'
+    params.initialCall === 'video' 
+      ? 'ringing-video' 
+      : params.initialCall === 'audio' 
+      ? 'ringing-audio' 
+      : 'idle'
   );
 
   const [isMuted, setIsMuted] = useState(false);
@@ -175,7 +179,8 @@ export default function SamtaleScreen() {
           <TouchableOpacity 
             style={styles.okButton} 
             onPress={() => {
-              if (params.initialCall === 'video') {
+              // Endret slik at både video og audio går rett tilbake (til meldinger) når de kom derfra
+              if (params.initialCall === 'video' || params.initialCall === 'audio') {
                 router.back();
               } else {
                 setCallState('idle');

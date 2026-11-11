@@ -1,4 +1,5 @@
 import { Image } from 'expo-image';
+import { router } from 'expo-router';
 import { SymbolView } from 'expo-symbols';
 import { useRef } from 'react';
 import {
@@ -38,12 +39,12 @@ export default function ChatScreen({
         <HeaderAction
           label={`Videosamtale med ${conversation.name}`}
           icon={{ ios: 'video', android: 'videocam', web: 'videocam' }}
-          onPress={onVideoCall}
+          onPress={() => router.push(`/contacts/samtale?name=${encodeURIComponent(conversation.name)}&initialCall=video`)}
         />
         <HeaderAction
           label={`Ring ${conversation.name}`}
           icon={{ ios: 'phone', android: 'call', web: 'call' }}
-          onPress={onCall}
+          onPress={() => router.push(`/contacts/samtale?name=${encodeURIComponent(conversation.name)}&initialCall=audio`)}
         />
       </MessagesHeader>
 
