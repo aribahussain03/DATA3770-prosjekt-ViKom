@@ -27,7 +27,12 @@ export default function ChatRoute() {
         onBack={() =>
           router.canGoBack() ? router.back() : router.replace('/messages')
         }
-        onVideoCall={() => router.push('/video-call')}
+        onAudioCall={() =>
+          router.push(`/contacts/samtale?name=${encodeURIComponent(conversation.name)}&initialCall=audio`)
+        }
+        onVideoCall={() =>
+          router.push(`/contacts/samtale?name=${encodeURIComponent(conversation.name)}&initialCall=video`)
+        }
       />
     </SafeAreaView>
   );
