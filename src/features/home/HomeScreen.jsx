@@ -1,6 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
-import { Image, StyleSheet, View } from "react-native";
+import { Image, Pressable, StyleSheet, View } from "react-native";
 
 import BottomNavigation from '@/components/BottomNavigation';
 import HomeTile from '@/components/HomeTile';
@@ -20,11 +20,14 @@ export default function HomeScreen() {
                     style={styles.logo}
                     resizeMode='contain'
                 />
-                <Ionicons
-                    name="settings-outline"
-                    size={34}
-                    color="#000000"
-                />
+
+                <Pressable onPress={() => router.push('/settings')}>
+                    <Ionicons
+                        name="settings-outline"
+                        size={34}
+                        color="#000000"
+                    />
+                </Pressable>
             </View>
 
             {/* Hovedfunksjonen på forsiden. */}
