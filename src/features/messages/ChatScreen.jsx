@@ -1,6 +1,6 @@
 import { Image } from 'expo-image';
 import { SymbolView } from 'expo-symbols';
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import {
   FlatList,
   KeyboardAvoidingView,
@@ -13,48 +13,24 @@ import {
 
 import ChatBubble from '../../components/ChatBubble';
 import MessageInput from '../../components/MessageInput';
-import { mockMessages } from '../../data/messagesMockData';
 import { AppColors } from '../../theme/colors';
 import MessagesHeader from './MessagesHeader';
-
-// Klokkeslett på norsk form, for eksempel 14.30.
-function currentTime() {
-  const now = new Date();
-  const hours = String(now.getHours()).padStart(2, '0');
-  const minutes = String(now.getMinutes()).padStart(2, '0');
-  return `${hours}.${minutes}`;
-}
+import { sendMessage, useMessagesStore } from './messagesStore';
 
 // Viser én samtale. `conversation` trenger bare id og name, så en ny kontakt gir en tom chat.
 export default function ChatScreen({
   conversation,
-  initialMessages,
   onBack,
   onVideoCall,
   onCall,
   keyboardVerticalOffset = 0,
 }) {
-  const [messages, setMessages] = useState(
-    () =>
-      initialMessages ??
-      mockMessages.filter((message) => message.conversationId === conversation.id)
+  // Meldingene ligger i det felles lageret, så de vises også i samtalelisten.
+  const { messages: allMessages } = useMessagesStore();
+  const messages = allMessages.filter(
+    (message) => message.conversationId === conversation.id
   );
-  const nextId = useRef(1);
   const listRef = useRef(null);
-
-  // Nye meldinger lagres bare på denne skjermen, og er borte når den lukkes.
-  function sendMessage(text) {
-    const message = {
-      // «new-» hindrer at id-en kolliderer med testdataene.
-      id: `new-${nextId.current++}`,
-      conversationId: conversation.id,
-      sender: 'me',
-      text,
-      time: currentTime(),
-    };
-
-    setMessages((current) => [...current, message]);
-  }
 
   return (
     <View style={styles.container}>
@@ -101,7 +77,7 @@ export default function ChatScreen({
           )}
         />
 
-        <MessageInput onSend={sendMessage} />
+        <MessageInput onSend={(text) => sendMessage(conversation, text)} />
       </KeyboardAvoidingView>
     </View>
   );

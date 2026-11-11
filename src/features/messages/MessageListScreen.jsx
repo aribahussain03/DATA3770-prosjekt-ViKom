@@ -10,18 +10,15 @@ import {
 } from 'react-native';
 
 import AppDialog from '../../components/AppDialog';
-import { mockConversations } from '../../data/messagesMockData';
 import { AppColors } from '../../theme/colors';
 import { Typography } from '../../theme/typography';
 import MessagesHeader from './MessagesHeader';
+import { deleteConversation, useMessagesStore } from './messagesStore';
 
 // Skjermen «Tidligere samtaler»: søk i, åpne og slett samtaler.
-export default function MessageListScreen({
-  initialConversations = mockConversations,
-  onBack,
-  onOpenConversation,
-}) {
-  const [conversations, setConversations] = useState(initialConversations);
+export default function MessageListScreen({ onBack, onOpenConversation }) {
+  // Samtalene ligger i det felles lageret, med den nyeste øverst.
+  const { conversations } = useMessagesStore();
   const [search, setSearch] = useState('');
   const [conversationToDelete, setConversationToDelete] = useState(null);
 
@@ -32,10 +29,11 @@ export default function MessageListScreen({
   );
 
   // Slettingen gjelder bare lokalt: samtalen er tilbake når appen startes på nytt.
-  function deleteConversation() {
-    setConversations((current) =>
-      current.filter((conversation) => conversation.id !== conversationToDelete.id)
-    );
+  function confirmDelete() {
+    // `?.` trengs fordi React Compiler leser verdien før dialogen er åpen.
+    if (conversationToDelete) {
+      deleteConversation(conversationToDelete?.id);
+    }
     setConversationToDelete(null);
   }
 
@@ -73,7 +71,14 @@ export default function MessageListScreen({
             onLongPress={() => setConversationToDelete(item)}
             style={({ pressed }) => [styles.card, pressed && styles.cardPressed]}
           >
-            <Image source={item.picture} style={styles.avatar} />
+            {/* Kontakter uten bilde får forbokstaven i en sirkel. */}
+            {item.picture ? (
+              <Image source={item.picture} style={styles.avatar} />
+            ) : (
+              <View style={[styles.avatar, styles.avatarFallback]}>
+                <Text style={styles.avatarInitial}>{item.name.charAt(0)}</Text>
+              </View>
+            )}
 
             <View style={styles.textColumn}>
               <Text style={styles.time}>{item.time}</Text>
@@ -97,7 +102,7 @@ export default function MessageListScreen({
         message={`Samtalen med ${conversationToDelete?.name} blir slettet.`}
         confirmLabel="Slett"
         cancelLabel="Avbryt"
-        onConfirm={deleteConversation}
+        onConfirm={confirmDelete}
         onClose={() => setConversationToDelete(null)}
       />
     </View>
@@ -145,6 +150,15 @@ const styles = StyleSheet.create({
     width: 88,
     height: 88,
     borderRadius: 44,
+  },
+  avatarFallback: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    backgroundColor: AppColors.background,
+  },
+  avatarInitial: {
+    fontSize: 36,
+    color: AppColors.text,
   },
   textColumn: {
     flex: 1,
