@@ -8,9 +8,7 @@ export default function SamtaleScreen() {
   const params = useLocalSearchParams();
   const contactName = params.name || 'Mamma';
 
-  // ==========================================
-  // 1. TILSTANDER (STATE) - Må ligge øverst her
-  // ==========================================
+
   const [isFavorite, setIsFavorite] = useState(params.isFavorite === 'true');
 
   const [callState, setCallState] = useState(
@@ -32,9 +30,7 @@ export default function SamtaleScreen() {
     return () => clearTimeout(timer);
   }, [callState]);
 
-  // ==========================================
-  // 2. FUNKSJONER - Plassert før return()
-  // ==========================================
+
   const toggleFavorite = () => {
     const newFavoriteStatus = !isFavorite;
     setIsFavorite(newFavoriteStatus);
@@ -42,9 +38,7 @@ export default function SamtaleScreen() {
     router.setParams({ isFavorite: newFavoriteStatus.toString() });
   };
 
-  // ==========================================
-  // 3. UI / VISUELL STRUKTUR (Inne i return)
-  // ==========================================
+
   return (
     <View style={styles.container}>
       {/* Tilbakeknapp (vises kun i idle-modus) */}
@@ -79,7 +73,7 @@ export default function SamtaleScreen() {
 
             <TouchableOpacity 
               style={styles.iconButton} 
-              onPress={() => router.push('/meldinger')} 
+             onPress={() => router.push(`/messages/chat?name=${encodeURIComponent(contactName)}`)}
             >
               <Ionicons name="chatbubble" size={28} color="#0066CC" />
             </TouchableOpacity>
@@ -196,9 +190,7 @@ export default function SamtaleScreen() {
   );
 }
 
-// ==========================================
-// 4. STILSETT (STYLESHEET)
-// ==========================================
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
