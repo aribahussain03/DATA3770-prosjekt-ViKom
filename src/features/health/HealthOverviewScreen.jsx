@@ -56,7 +56,7 @@ export default function HealthOverviewScreen({
 
   return (
     <HealthScreenLayout
-      title="Helseoversikt"
+      title="Helse og avtaler"
       personName={selectedPerson.name}
       onBack={onBack}
     >

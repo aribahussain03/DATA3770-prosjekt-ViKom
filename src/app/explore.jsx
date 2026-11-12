@@ -101,7 +101,7 @@ export default function ExploreScreen() {
                 healthSelected && styles.selectedButtonText,
               ]}
             >
-              Helseoversikt
+              Helse og avtaler
             </Text>
           </Pressable>
 

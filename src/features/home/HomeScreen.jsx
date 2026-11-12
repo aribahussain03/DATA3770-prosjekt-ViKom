@@ -1,6 +1,7 @@
 import { Ionicons } from '@expo/vector-icons';
 import { router } from 'expo-router';
 import { Image, Pressable, StyleSheet, View } from "react-native";
+import { SafeAreaView } from 'react-native-safe-area-context';
 
 import BottomNavigation from '@/components/BottomNavigation';
 import HomeTile from '@/components/HomeTile';
@@ -10,7 +11,7 @@ import { AppColors } from '@/theme/colors';
 
 export default function HomeScreen() {
     return (
-        <View style={styles.container}>
+        <SafeAreaView style={styles.container}edges={['top']}>
             {/* Toppfelt med ViKom-logo og innstillinger.
             Bruker midlertidig tekst/symbol frem til de riktige
             elementene fra Figma kobles inn. */}
@@ -76,7 +77,7 @@ export default function HomeScreen() {
 
             {/* Hjem er aktiv side, derfor markeres Hjem blått. */}
             <BottomNavigation activeTab="home" />
-        </View>
+        </SafeAreaView>
     );
 }
 
