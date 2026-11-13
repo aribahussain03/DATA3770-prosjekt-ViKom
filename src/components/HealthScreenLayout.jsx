@@ -1,5 +1,5 @@
 import { Pressable, StyleSheet, Text, View } from 'react-native';
-
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { AppColors } from '../theme/colors';
 import { Typography } from '../theme/typography';
 
@@ -10,7 +10,7 @@ export default function HealthScreenLayout({
   children,
 }) {
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container} edges={['top']}>
       <View style={styles.header}>
         <View style={styles.titleRow}>
           {onBack ? (
@@ -37,7 +37,7 @@ export default function HealthScreenLayout({
       </View>
 
       <View style={styles.content}>{children}</View>
-    </View>
+    </SafeAreaView>
   );
 }
 
