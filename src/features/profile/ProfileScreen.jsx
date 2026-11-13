@@ -1,13 +1,14 @@
 import { MaterialIcons } from '@expo/vector-icons';
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
-    Alert,
-    Pressable,
-    ScrollView,
-    StyleSheet,
-    Text,
-    TextInput,
-    View,
+  Alert,
+  Pressable,
+  ScrollView,
+  StyleSheet,
+  Text,
+  TextInput,
+  View,
 } from 'react-native';
 
 import { usePermissions } from '../../context/PermissionsContext';
@@ -79,7 +80,7 @@ function ProfileButton({
         pressed && styles.pressed,
       ]}
     >
-      <Icon name={icon} color={color} size={22} />
+      <Icon name={icon} size={22} color={color} />
 
       <Text style={[styles.buttonText, { color }]}>
         {label}
@@ -106,12 +107,12 @@ export default function ProfileScreen({
   } = usePermissions();
 
   const [editingUsername, setEditingUsername] = useState(false);
-  const [usernameDraft, setUsernameDraft] = useState(username);
+  const [usernameDraft, setUsernameDraft] = useState(username || '');
   const [showAddPerson, setShowAddPerson] = useState(false);
   const [personName, setPersonName] = useState('');
 
   const pendingSections = permissionOptions
-    .filter(({ key }) => permissionStatuses[key] === 'pending')
+    .filter(({ key }) => permissionStatuses?.[key] === 'pending')
     .map(({ key }) => key);
 
   function saveUsername() {
@@ -126,7 +127,11 @@ export default function ProfileScreen({
   }
 
   function savePerson() {
-    const personId = addPerson(personName);
+    if (!personName.trim()) {
+      return;
+    }
+
+    const personId = addPerson(personName.trim());
 
     if (personId) {
       setPersonName('');
@@ -135,6 +140,10 @@ export default function ProfileScreen({
   }
 
   function confirmRemovePerson() {
+    if (!selectedPerson) {
+      return;
+    }
+
     const personToRemove = selectedPerson;
 
     Alert.alert(
@@ -152,6 +161,11 @@ export default function ProfileScreen({
         },
       ]
     );
+  }
+
+  function handleLogOut() {
+    // Samme navigering som Logg ut i Innstillinger.
+    router.replace('/login');
   }
 
   return (
@@ -173,9 +187,7 @@ export default function ProfileScreen({
           style={styles.avatarPlaceholder}
         >
           {profileImage ? (
-            <Text style={styles.avatarImage}>
-              {profileImage}
-            </Text>
+            <Text style={styles.avatarImage}>{profileImage}</Text>
           ) : (
             <Icon
               name="account-circle"
@@ -232,11 +244,9 @@ export default function ProfileScreen({
         ) : (
           <Pressable
             accessibilityRole="button"
-            accessibilityLabel={`Rediger brukernavn${
-              username ? `: ${username}` : ''
-            }`}
+            accessibilityLabel="Rediger brukernavn"
             onPress={() => {
-              setUsernameDraft(username);
+              setUsernameDraft(username || '');
               setEditingUsername(true);
             }}
             style={({ pressed }) => [
@@ -260,7 +270,10 @@ export default function ProfileScreen({
 
       <View style={styles.section}>
         <View style={styles.sectionHeading}>
-          <Icon name="people-outline" color={AppColors.primary} />
+          <Icon
+            name="people-outline"
+            color={AppColors.primary}
+          />
 
           <Text
             accessibilityRole="header"
@@ -276,7 +289,7 @@ export default function ProfileScreen({
 
         <View style={styles.people}>
           {people.map((person) => {
-            const isSelected = person.id === selectedPerson.id;
+            const isSelected = person.id === selectedPerson?.id;
 
             return (
               <Pressable
@@ -301,9 +314,7 @@ export default function ProfileScreen({
                     name="person"
                     size={32}
                     color={
-                      isSelected
-                        ? '#FFFFFF'
-                        : AppColors.text
+                      isSelected ? '#FFFFFF' : AppColors.text
                     }
                   />
                 </View>
@@ -333,13 +344,11 @@ export default function ProfileScreen({
           <ProfileButton
             label={showAddPerson ? 'Avbryt' : 'Legg til person'}
             icon={showAddPerson ? 'close' : 'person-add'}
-            onPress={() =>
-              setShowAddPerson((current) => !current)
-            }
+            onPress={() => setShowAddPerson((current) => !current)}
             secondary
           />
 
-          {people.length > 1 && (
+          {people.length > 1 && selectedPerson && (
             <ProfileButton
               label={`Fjern ${selectedPerson.name}`}
               icon="delete-outline"
@@ -379,100 +388,113 @@ export default function ProfileScreen({
         )}
       </View>
 
-      <View style={styles.section}>
-        <View style={styles.sectionHeading}>
-          <Icon
-            name="verified-user"
-            color={AppColors.primary}
-          />
+      {selectedPerson && (
+        <View style={styles.section}>
+          <View style={styles.sectionHeading}>
+            <Icon
+              name="verified-user"
+              color={AppColors.primary}
+            />
 
-          <Text
-            accessibilityRole="header"
-            style={styles.sectionTitle}
-          >
-            Tillatelser for {selectedPerson.name}
-          </Text>
-        </View>
+            <Text
+              accessibilityRole="header"
+              style={styles.sectionTitle}
+            >
+              Tillatelser for {selectedPerson.name}
+            </Text>
+          </View>
 
-        {permissionOptions.map(({ key, label, icon }) => {
-          const status = permissionStatuses[key];
+          {permissionOptions.map(({ key, label, icon }) => {
+            const status = permissionStatuses?.[key] || 'none';
 
-          const statusColor =
-            status === 'granted'
-              ? '#176B39'
-              : status === 'pending'
-                ? '#855800'
-                : AppColors.textSecondary;
+            const statusColor =
+              status === 'granted'
+                ? '#176B39'
+                : status === 'pending'
+                  ? '#855800'
+                  : AppColors.textSecondary;
 
-          const statusIcon =
-            status === 'granted'
-              ? 'lock-open'
-              : status === 'pending'
-                ? 'schedule'
-                : 'lock-outline';
+            const statusIcon =
+              status === 'granted'
+                ? 'lock-open'
+                : status === 'pending'
+                  ? 'schedule'
+                  : 'lock-outline';
 
-          return (
-            <View key={key} style={styles.permissionRow}>
-              <Icon
-                name={icon}
-                size={28}
-                color={AppColors.primary}
-              />
+            return (
+              <View key={key} style={styles.permissionRow}>
+                <Icon
+                  name={icon}
+                  size={28}
+                  color={AppColors.primary}
+                />
 
-              <View style={styles.permissionContent}>
-                <Text style={styles.permissionLabel}>
-                  {label}
-                </Text>
-
-                <View style={styles.statusRow}>
-                  <Icon
-                    name={statusIcon}
-                    size={18}
-                    color={statusColor}
-                  />
-
-                  <Text
-                    style={[
-                      styles.status,
-                      { color: statusColor },
-                    ]}
-                  >
-                    {statusLabels[status]}
+                <View style={styles.permissionContent}>
+                  <Text style={styles.permissionLabel}>
+                    {label}
                   </Text>
+
+                  <View style={styles.statusRow}>
+                    <Icon
+                      name={statusIcon}
+                      size={18}
+                      color={statusColor}
+                    />
+
+                    <Text
+                      style={[
+                        styles.status,
+                        { color: statusColor },
+                      ]}
+                    >
+                      {statusLabels[status]}
+                    </Text>
+                  </View>
                 </View>
               </View>
+            );
+          })}
+
+          <ProfileButton
+            label="Be om tillatelser"
+            icon="vpn-key"
+            onPress={onRequestPermissions}
+            disabled={!onRequestPermissions}
+          />
+
+          {pendingSections.length > 0 && (
+            <View style={styles.testPanel}>
+              <Text style={styles.description}>
+                Prototype: Simuler at personen har godkjent
+                forespørselen.
+              </Text>
+
+              <ProfileButton
+                label="Simuler godkjenning"
+                icon="check-circle-outline"
+                onPress={() =>
+                  simulateApproval(
+                    selectedPerson.id,
+                    pendingSections
+                  )
+                }
+                secondary
+              />
             </View>
-          );
-        })}
+          )}
+        </View>
+      )}
 
-        <ProfileButton
-          label="Be om tillatelser"
-          icon="vpn-key"
-          onPress={onRequestPermissions}
-          disabled={!onRequestPermissions}
-        />
-
-        {pendingSections.length > 0 && (
-          <View style={styles.testPanel}>
-            <Text style={styles.description}>
-              Prototype: Simuler at personen har godkjent
-              forespørselen.
-            </Text>
-
-            <ProfileButton
-              label="Simuler godkjenning"
-              icon="check-circle-outline"
-              onPress={() =>
-                simulateApproval(
-                  selectedPerson.id,
-                  pendingSections
-                )
-              }
-              secondary
-            />
-          </View>
-        )}
-      </View>
+      <Pressable
+        accessibilityRole="button"
+        onPress={handleLogOut}
+        style={({ pressed }) => [
+          styles.logOutButton,
+          pressed && styles.pressed,
+        ]}
+      >
+        <Text style={styles.logOutText}>Logg ut</Text>
+      </Pressable>
     </ScrollView>
   );
 }
@@ -484,7 +506,7 @@ const styles = StyleSheet.create({
   },
   content: {
     padding: 20,
-    paddingBottom: 40,
+    paddingBottom: 48,
     gap: 28,
   },
   heading: {
@@ -665,6 +687,24 @@ const styles = StyleSheet.create({
     gap: 12,
     borderRadius: 8,
     backgroundColor: AppColors.surface,
+  },
+  logOutButton: {
+    alignSelf: 'center',
+    alignItems: 'center',
+    justifyContent: 'center',
+    minHeight: 64,
+    minWidth: 240,
+    backgroundColor: '#E60000',
+    borderRadius: 32,
+    paddingHorizontal: 32,
+    marginTop: 24,
+    marginBottom: 32,
+  },
+  logOutText: {
+    fontSize: 32,
+    lineHeight: 40,
+    fontWeight: '400',
+    color: '#FFFFFF',
   },
   disabled: {
     opacity: 0.5,

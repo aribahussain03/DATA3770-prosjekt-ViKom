@@ -1,5 +1,5 @@
-import RegisterScreen from "@/features/auth/RegisterScreen";
+import RegisterScreen from '@/features/auth/RegisterScreen';
 
 export default function RegisterRoute() {
-    return <RegisterScreen />;
+  return <RegisterScreen />;
 }

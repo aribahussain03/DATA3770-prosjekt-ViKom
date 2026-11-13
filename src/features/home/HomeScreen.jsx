@@ -6,6 +6,7 @@ import BottomNavigation from '@/components/BottomNavigation';
 import HomeTile from '@/components/HomeTile';
 import { AppColors } from '@/theme/colors';
 
+
 // Hovedskjermen i ViKom. Herfra kan brukeren navigere til appens fire hovedfunksjoner.
 
 export default function HomeScreen() {
@@ -26,11 +27,18 @@ export default function HomeScreen() {
                     accessibilityRole="button"
                     accessibilityLabel="Innstillinger"
                 >
-                    <Ionicons
-                        name="settings-outline"
-                        size={34}
-                        color="#000000"
-                    />
+                    <Pressable
+                        accessibilityRole="button"
+                        accessibilityLabel="Innstillinger"
+                        onPress={() => router.push('/settings')}
+                        style={styles.settingsButton}
+                    >
+                        <Ionicons
+                            name="settings-outline"
+                            size={34}
+                            color="#000000"
+                        />
+                    </Pressable>
                 </Pressable>
             </View>
 
@@ -128,6 +136,13 @@ const styles = StyleSheet.create({
 
     spacer: {
         flex: 1,
+    },
+    settingsButton: {
+        minWidth: 48,
+        minHeight: 48,
+        alignItems: 'center',
+        justifyContent: 'center',
+        marginTop: 32,
     },
 });
 

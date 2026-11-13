@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import {
     KeyboardAvoidingView,
@@ -11,346 +12,348 @@ import {
     View,
 } from 'react-native';
 
-import { router } from 'expo-router';
-
-/**
- * Innloggingsskjerm for ViKom..
- * Frontend-prototype: Ingen ekte autentisering.
- */
 export default function LoginScreen() {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
-    const [error, setError] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
 
-    // Visning av popup-vinduet "Tilbakestill passord".
-    const [forgotModalVisible, setForgotModalVisible] = useState(false);
-    const [resetEmail, setResetEmail] = useState('');
-    const [resetError, setResetError] = useState('');
+  const [forgotModalVisible, setForgotModalVisible] = useState(false);
+  const [resetEmail, setResetEmail] = useState('');
+  const [resetError, setResetError] = useState('');
 
-    // Sjekker inndata før vi simulerer innlogging.
-    const handleLogin = () => {
-        if (!email.trim() || !password) {
-            setError('Fyll ut både e-post og passord.');
-            return;
-        }
+  const canLogin = Boolean(email.trim() && password.trim());
 
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
-            setError('Skriv inn en gyldig e-postadresse.');
-            return;
-        }
+  function handleLogin() {
+    if (!canLogin) {
+      return;
+    }
 
-        setError('');
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())) {
+      setError('Skriv inn en gyldig e-postadresse.');
+      return;
+    }
 
-        // Simulerer vellykket innlogging.
-        router.replace('/home');
-    };
+    setError('');
 
-    // Åpner popup-vinduet med et tomt e-postfelt.
-    const handleForgotPassword = () => {
-        setError('');
-        setResetError('');
-        setResetEmail('');
-        setForgotModalVisible(true);
-    };
+    // Prototypen simulerer innlogging.
+    router.replace('/home');
+  }
 
-    // Sjekker e-postfeltet i popup-vidnuet for glemt passord.
-    const handleResetPassword = () => {
-        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.trim())) {
-            setResetError('Skriv inn en gyldig e-postadresse.');
-            return;
-        }
+  function openForgotPassword() {
+    setResetEmail('');
+    setResetError('');
+    setForgotModalVisible(true);
+  }
 
-        setResetError('');
-        setForgotModalVisible(false);
-    };
+  function handleResetPassword() {
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(resetEmail.trim())) {
+      setResetError('Skriv inn en gyldig e-postadresse.');
+      return;
+    }
 
-    return (
+    // Ingen e-post sendes i prototypen.
+    setResetError('');
+    setForgotModalVisible(false);
+  }
+
+  return (
+    <KeyboardAvoidingView
+      style={styles.screen}
+      behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+    >
+      <ScrollView
+        contentContainerStyle={styles.content}
+        keyboardShouldPersistTaps="handled"
+      >
+        <View style={styles.form}>
+          <Text style={styles.logo}>ViKom</Text>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>E-post</Text>
+
+            <TextInput
+              accessibilityLabel="E-post"
+              value={email}
+              onChangeText={(value) => {
+                setEmail(value);
+                setError('');
+              }}
+              placeholder="Skriv inn e-post"
+              placeholderTextColor="#909090"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              style={styles.input}
+            />
+          </View>
+
+          <View style={styles.field}>
+            <Text style={styles.label}>Passord</Text>
+
+            <TextInput
+              accessibilityLabel="Passord"
+              value={password}
+              onChangeText={(value) => {
+                setPassword(value);
+                setError('');
+              }}
+              placeholder="Skriv inn passord"
+              placeholderTextColor="#909090"
+              secureTextEntry
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="password"
+              returnKeyType="go"
+              onSubmitEditing={handleLogin}
+              style={styles.input}
+            />
+          </View>
+
+          <Pressable
+            accessibilityRole="button"
+            onPress={openForgotPassword}
+            style={({ pressed }) => [
+              styles.forgotButton,
+              pressed && styles.pressed,
+            ]}
+          >
+            <Text style={styles.forgotText}>Glemt passord?</Text>
+          </Pressable>
+
+          {error ? (
+            <Text accessibilityRole="alert" style={styles.error}>
+              {error}
+            </Text>
+          ) : null}
+
+          <View style={styles.buttonGroup}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityState={{ disabled: !canLogin }}
+              disabled={!canLogin}
+              onPress={handleLogin}
+              style={({ pressed }) => [
+                styles.button,
+                !canLogin && styles.disabledButton,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.buttonText}>Logg inn</Text>
+            </Pressable>
+
+            <Pressable
+              accessibilityRole="button"
+              onPress={() => router.push('/register')}
+              style={({ pressed }) => [
+                styles.button,
+                pressed && styles.pressed,
+              ]}
+            >
+              <Text style={styles.buttonText}>Registrer</Text>
+            </Pressable>
+          </View>
+        </View>
+      </ScrollView>
+
+      <Modal
+        visible={forgotModalVisible}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setForgotModalVisible(false)}
+      >
         <KeyboardAvoidingView
-            style={styles.container}
-            behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          style={styles.modalOverlay}
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         >
-            <ScrollView
-                contentContainerStyle={styles.scrollContent}
-                keyboardShouldPersistTaps="handled"
-            >
-                <View style={styles.form}>
-                    <Text style={styles.logo}>ViKom</Text>
+          <View style={styles.modalContent}>
+            <Text accessibilityRole="header" style={styles.modalTitle}>
+              Tilbakestill passord
+            </Text>
 
-                    {/* E-post */}
-                    <View style={styles.field}>
-                        <Text style={styles.label}>E-post</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="skriv inn e-post"
-                            placeholderTextColor="#909090"
-                            value={email}
-                            onChangeText={setEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                        />
-                    </View>
+            <Text style={styles.modalDescription}>
+              Skriv inn e-postadressen din. I prototypen simuleres
+              forespørselen uten at en e-post sendes.
+            </Text>
 
-                    {/* Passord */}
-                    <View style={styles.field}>
-                        <Text style={styles.label}>Passord</Text>
-                        <TextInput
-                            style={styles.input}
-                            placeholder="Skriv inn passord"
-                            placeholderTextColor="#909090"
-                            value={password}
-                            onChangeText={setPassword}
-                            secureTextEntry
-                            autoComplete="password"
-                        />    
-                    </View>
+            <TextInput
+              accessibilityLabel="E-post for tilbakestilling"
+              value={resetEmail}
+              onChangeText={(value) => {
+                setResetEmail(value);
+                setResetError('');
+              }}
+              placeholder="Skriv inn e-post"
+              placeholderTextColor="#909090"
+              keyboardType="email-address"
+              autoCapitalize="none"
+              autoCorrect={false}
+              autoComplete="email"
+              style={styles.input}
+            />
 
-                    {/* Åpner popup-vindu for glemt passord */}
-                    <Pressable
-                        style={styles.forgotPassword}
-                        onPress={handleForgotPassword}
-                        accessibilityRole="button"
-                    >
-                        <Text style={styles.forgotText}>
-                            Glemt Passord?
-                        </Text>
-                    </Pressable>
+            {resetError ? (
+              <Text accessibilityRole="alert" style={styles.error}>
+                {resetError}
+              </Text>
+            ) : null}
 
-                    {error ? (
-                        <Text style={styles.error} accessibilityRole="alert">
-                            {error}
-                        </Text>
-                    ) : null}
+            <View style={styles.modalButtons}>
+              <Pressable
+                accessibilityRole="button"
+                onPress={() => setForgotModalVisible(false)}
+                style={({ pressed }) => [
+                  styles.modalButton,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text style={styles.modalButtonText}>Avbryt</Text>
+              </Pressable>
 
-                    {/* Innlogging og registrering */}
-                    <View style={styles.buttonRow}>
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.button,
-                                styles.loginButton,
-                                pressed && styles.pressed,
-                            ]}
-                            onPress={handleLogin}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.buttonText}>
-                                Logg inn
-                            </Text>
-                        </Pressable>
-
-                        <Pressable
-                            style={({ pressed }) => [
-                                styles.button,
-                                styles.registerButton,
-                                pressed && styles.pressed,
-                            ]}
-                            onPress={() => router.push('/register')}
-                            accessibilityRole="button"
-                        >
-                            <Text style={styles.buttonText}>
-                                Registrer
-                            </Text>                        
-                        </Pressable>
-                    </View>
-                </View>
-            </ScrollView>        
-
-            {/* Popup-vindu for tilbakestilling av passord */}
-            <Modal
-                visible={forgotModalVisible}
-                transparent
-                animationType="fade"
-                onRequestClose={() => setForgotModalVisible(false)}
-            >
-                <View style={styles.modalOverlay}>
-                    <View style={styles.modalContent}>
-                        <Text style={styles.modalTitle}>
-                            Tilbakestill passord
-                        </Text>
-
-                        <Text style={styles.modalDescription}>
-                            Skriv inn e-postadressen din, så sender vi 
-                            deg en lenke for å tilbakestille passordet.
-                        </Text>
-
-                        <TextInput
-                            style={styles.modalInput}
-                            placeholder="Skriv inn e-post"
-                            placeholderTextColor="#909090"
-                            value={resetEmail}
-                            onChangeText={setResetEmail}
-                            keyboardType="email-address"
-                            autoCapitalize="none"
-                            autoComplete="email"
-                        />
-
-                        {resetError ? (
-                            <Text
-                                style={styles.error}
-                                accessibilityRole="alert"
-                            >
-                                {resetError}
-                            </Text>
-                        ) : null}
-
-                        <View style={styles.modalButtons}>
-                            <Pressable
-                                onPress={() => setForgotModalVisible(false)}
-                                accessibilityRole="button"
-                            >
-                                <Text style={styles.modalButtonText}>
-                                    Avbryt
-                                </Text>
-                            </Pressable>
-
-                            <Pressable
-                                onPress={handleResetPassword}
-                                accessibilityRole="button"
-                            >
-                                <Text style={styles.modalButtonText}>
-                                    Send
-                                </Text>
-                            </Pressable>   
-                        </View>
-                    </View>
-                </View>
-            </Modal>
+              <Pressable
+                accessibilityRole="button"
+                onPress={handleResetPassword}
+                style={({ pressed }) => [
+                  styles.modalButton,
+                  pressed && styles.pressed,
+                ]}
+              >
+                <Text style={styles.modalButtonText}>Send</Text>
+              </Pressable>
+            </View>
+          </View>
         </KeyboardAvoidingView>
-    );
-}    
+      </Modal>
+    </KeyboardAvoidingView>
+  );
+}
 
 const styles = StyleSheet.create({
-    container: {
-        flex: 1,
-        backgroundColor: '#FFFFFF'
-    },
-
-    scrollContent: {
-        flexGrow: 1,
-        justifyContent: 'center',
-        paddingHorizontal: 32,
-        paddingVertical: 48,
-    },
-
-    form: {
-        width: '100%',
-        maxWidth: 420,
-        alignSelf: 'center',
-    },
-
-    logo: {
-        fontSize: 48,
-        fontWeight: 'bold',
-        color: '#0789F5',
-        textAlign: 'center',
-        marginBottom: 78,
-    },
-
-    field: {
-        marginBottom: 22,
-    },
-
-    label: {
-        fontSize: 20,
-        color: '#000000',
-        marginBottom: 6,
-    },
-
-    input: {
-        height: 43,
-        backgroundColor: '#EAEAEA',
-        borderRadius: 9,
-        paddingHorizontal: 12,
-        fontSize: 14,
-        color: '#000000',
-    },
-
-    forgotPassword: {
-        alignSelf: 'flex-start',
-        marginTop: -4,
-    },
-
-    error: {
-        marginTop: 12,
-        color: '#B00020',
-        fotnSize: 14,
-    },
-
-    buttonRow: {
-        flexDirection: 'row',
-        gap: 16,
-        marginTop: 76,
-        paddingHorizontal: 12,
-    },
-
-    button: {
-        flex: 1,
-        height: 42,
-        borderRadius: 4,
-        justifyContent: 'center',
-        alignItems: 'center',
-    },
-
-    loginButton: {
-        backgroundColor: '#94BFEA',
-    },
-
-    registerButton: {
-        backgroundColor: '#246395',
-    },
-
-    buttonText: {
-        fontSize: 20,
-        color: '#FFFFFF',
-    },
-
-    pressed: {
-        opacity: 0.8,
-    },
-
-    modalOverlay: {
-        flex: 1,
-        backgroundColor: 'rgba(0, 0, 0, 0.25)',
-        justifyContent: 'center',
-        justifyContent: 'center',
-        alignItems: 'center',
-        paddingHorizontal: 36,
-    },
-
-    modalContent: {
-        width: '100%',
-        maxWidth: 360,
-        backgroundColor: '#D9D9D9',
-        paddingTop: 14,
-        paddingHorizontal: 20,
-        paddingBottom: 12,
-    },
-
-    modalTitle: {
-        fontSize: 21,
-        color: '#000000',
-        textAlign: 'center',
-        marginBottom: 6,
-    },
-
-    modalInput: {
-        height: 43,
-        backgroundColor: '#FFFFFF',
-        paddingHorizontal: 14,
-        fontSize: 14,
-        color: '#000000',
-    },
-
-    modalButtons: {
-        flexDirection: 'row',
-        justifyContent: 'flex-end',
-        gap: 36,
-        marginTop: 58,
-    },
-
-    modalButtonText: {
-        fontSize: 20,
-        color: '#000000',
-    },
-
+  screen: {
+    flex: 1,
+    backgroundColor: '#FFFFFF',
+  },
+  content: {
+    flexGrow: 1,
+    justifyContent: 'center',
+    paddingHorizontal: 32,
+    paddingVertical: 48,
+  },
+  form: {
+    width: '100%',
+    maxWidth: 420,
+    alignSelf: 'center',
+  },
+  logo: {
+    fontSize: 48,
+    fontWeight: 'bold',
+    color: '#0789F5',
+    textAlign: 'center',
+    marginBottom: 78,
+  },
+  field: {
+    width: '100%',
+    marginBottom: 22,
+  },
+  label: {
+    fontSize: 20,
+    color: '#000000',
+    marginBottom: 6,
+  },
+  input: {
+    width: '100%',
+    minHeight: 48,
+    paddingHorizontal: 12,
+    paddingVertical: 12,
+    borderRadius: 9,
+    backgroundColor: '#EAEAEA',
+    fontSize: 16,
+    color: '#000000',
+  },
+  forgotButton: {
+    alignSelf: 'flex-start',
+    minHeight: 44,
+    justifyContent: 'center',
+  },
+  forgotText: {
+    fontSize: 16,
+    color: '#000000',
+  },
+  error: {
+    fontSize: 14,
+    color: '#B00020',
+    marginTop: 12,
+  },
+  buttonGroup: {
+    width: '100%',
+    flexDirection: 'column',
+    alignItems: 'stretch',
+    gap: 16,
+    marginTop: 40,
+  },
+  button: {
+    width: '100%',
+    minHeight: 56,
+    paddingHorizontal: 16,
+    paddingVertical: 14,
+    alignItems: 'center',
+    justifyContent: 'center',
+    borderRadius: 9,
+    backgroundColor: '#246395',
+  },
+  disabledButton: {
+    backgroundColor: '#94BFEA',
+  },
+  buttonText: {
+    fontSize: 20,
+    color: '#FFFFFF',
+    textAlign: 'center',
+  },
+  pressed: {
+    opacity: 0.75,
+  },
+  modalOverlay: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+    padding: 24,
+    backgroundColor: 'rgba(0, 0, 0, 0.3)',
+  },
+  modalContent: {
+    width: '100%',
+    maxWidth: 380,
+    padding: 24,
+    borderRadius: 12,
+    backgroundColor: '#FFFFFF',
+  },
+  modalTitle: {
+    fontSize: 22,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: '#000000',
+    marginBottom: 12,
+  },
+  modalDescription: {
+    fontSize: 16,
+    lineHeight: 23,
+    color: '#444444',
+    marginBottom: 20,
+  },
+  modalButtons: {
+    flexDirection: 'row',
+    justifyContent: 'flex-end',
+    gap: 16,
+    marginTop: 20,
+  },
+  modalButton: {
+    minHeight: 48,
+    minWidth: 64,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 12,
+  },
+  modalButtonText: {
+    fontSize: 18,
+    color: '#246395',
+  },
 });

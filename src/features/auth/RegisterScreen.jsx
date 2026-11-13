@@ -20,9 +20,19 @@ export default function RegisterScreen() {
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
     const [error, setError] = useState('');
+    const canRegister = Boolean(
+    username.trim() &&
+    email.trim() &&
+    password.trim() &&
+    confirmPassword.trim()
+);
 
     // Kontrollerer feltene før vi simulerer registrering.
     const handleRegister = () => {
+        if (!canRegister) {
+            setError('Fyll ut alle obligatoriske felt.');
+            return;
+        }
         if (!username.trim() || !email.trim() || !password || !confirmPassword) {
             setError('Fyll ut alle obligatoriske felt.');
             return;
@@ -134,25 +144,28 @@ export default function RegisterScreen() {
 
                     <View style={styles.buttonRow}>
                         <Pressable
+                            accessibilityRole="button"
+                            accessibilityState={{ disabled: !canRegister }}
+                            disabled={!canRegister}
+                            onPress={handleRegister}
                             style={({ pressed }) => [
                                 styles.button,
                                 styles.registerButton,
+                                !canRegister && styles.disabledButton,
                                 pressed && styles.pressed,
                             ]}
-                            onPress={handleRegister}
-                            accessibilityRole="button"
                         >
-                            <Text style={styles.buttonText}>Registrer</Text>    
+                            <Text style={styles.buttonText}>Registrer</Text>
                         </Pressable>
 
                         <Pressable
+                            accessibilityRole="button"
+                            onPress={() => router.back()}
                             style={({ pressed }) => [
                                 styles.button,
                                 styles.backButton,
                                 pressed && styles.pressed,
                             ]}
-                            onPress={() => router.replace('/login')}
-                            accessibilityRole="button"
                         >
                             <Text style={styles.buttonText}>Tilbake</Text>
                         </Pressable>
@@ -228,26 +241,26 @@ const styles = StyleSheet.create({
     },
 
     buttonRow: {
-        flexDirection: 'row',
-        gap: 16,
-        marginTop: 10,
-        paddingHorizontal: 18,
+    flexDirection: 'column',
+    gap: 16,
+    marginTop: 10,
     },
-
     button: {
-        flex: 1,
-        height: 42,
+        width: '100%',
+        minHeight: 56,
+        paddingVertical: 14,
         borderRadius: 4,
         alignItems: 'center',
         justifyContent: 'center',
     },
-
     registerButton: {
-        backgroundColor: '#94BFEA',
+        backgroundColor: '#246395',
     },
-
     backButton: {
         backgroundColor: '#246395',
+    },
+    disabledButton: {
+        backgroundColor: '#94BFEA',
     },
 
     buttonText: {
