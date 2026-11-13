@@ -27,19 +27,13 @@ export default function HomeScreen() {
                     onPress={() => router.push('/settings')}
                     accessibilityRole="button"
                     accessibilityLabel="Innstillinger"
+                    style={styles.settingsButton}
                 >
-                    <Pressable
-                        accessibilityRole="button"
-                        accessibilityLabel="Innstillinger"
-                        onPress={() => router.push('/settings')}
-                        style={styles.settingsButton}
-                    >
-                        <Ionicons
-                            name="settings-outline"
-                            size={34}
-                            color="#000000"
-                        />
-                    </Pressable>
+                    <Ionicons
+                        name="settings-outline"
+                        size={34}
+                        color="#000000"
+                    />
                 </Pressable>
             </View>
 
